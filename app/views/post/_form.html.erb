@@ -1,0 +1,10 @@
+<h1>Create post</h1>
+  <%= form_with(model: @post) do |form| %>
+  <div>
+    <%= form.label :Post %><br>
+    <%= form.text_field :name,:size=>"100", placeholder: "Make an offer ", :maxlength=>"254" %>
+  </div><br>
+<div class="actions">
+    <%= form.submit "send" %>
+ </div>
+ <% end %>

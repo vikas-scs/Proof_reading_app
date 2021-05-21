@@ -1,0 +1,10 @@
+<h1>Add balance</h1>
+  <%= form_with(model: @wallet) do |form| %>
+  <div>
+    <%= form.label :enter_amount %><br>
+    <%= form.number_field :balance %>
+  </div><br>
+<div class="actions">
+    <%= form.submit "Add money" %>
+ </div>
+ <% end %>

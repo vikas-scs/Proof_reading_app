@@ -13,8 +13,8 @@
             <a class="nav-item nav-link mr-sm-2" href="/users/sign_up">Register</a>
         </form>
     <% end %>
-</nav><br>
-<% if user_signed_in? %>
-  <center><b><h1>welcome</h1></b></center>
-  <center><a href="post/new"><button type="button" class="btn btn-primary">Add Post</button></center>
-<% end %>
+</nav>
+<center>
+<%= render 'form', posts: @post %>
+<%= link_to 'Back', root_path %>
+</center>

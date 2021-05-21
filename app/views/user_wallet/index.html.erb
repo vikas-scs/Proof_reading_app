@@ -13,8 +13,7 @@
             <a class="nav-item nav-link mr-sm-2" href="/users/sign_up">Register</a>
         </form>
     <% end %>
-</nav><br>
-<% if user_signed_in? %>
-  <center><b><h1>welcome</h1></b></center>
-  <center><a href="post/new"><button type="button" class="btn btn-primary">Add Post</button></center>
-<% end %>
+</nav>
+<h1>Available Balance:</h1>
+<%= @user.wallet.balance rescue 0 %>
+<%= link_to "add balance", new_wallet_path %>

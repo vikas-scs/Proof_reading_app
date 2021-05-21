@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_21_042224) do
+ActiveRecord::Schema.define(version: 2021_05_21_053518) do
 
   create_table "admins", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 2021_05_21_042224) do
     t.datetime "remember_created_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "role"
+    t.string "status"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
   end
@@ -29,6 +31,14 @@ ActiveRecord::Schema.define(version: 2021_05_21_042224) do
     t.string "status"
     t.integer "user_id"
     t.integer "coupon_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_wallets", force: :cascade do |t|
+    t.integer "user_id"
+    t.float "balance"
+    t.float "lock_balance"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
