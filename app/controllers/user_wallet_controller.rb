@@ -1,22 +1,35 @@
 class UserWalletController < ApplicationController
 	def index
+
      @user = current_user
   end
   def new
-    @wallet = User_Wallet.new 
+    @wallet = UserWallet.find(params[:id])
   end
   def edit
-     @wallet = User_Wallet.find(params[:id])
+  	   puts "helooooooo"
+       @wallet = UserWallet.find(params[:id])
   end
   def show
-    @wallet = User_Wallet.find(params[:id])
+    @wallet = UserWallet.find(params[:id])
   end
   def create
-    @wallet = User_Wallet.new(user_wallet_params)
-    @wallet.user_id = current_user.id
+  	amount = params["balance"].to_f
+  	if amount < 0
+  	    	flash[:notice] = "invalid amount"
+  	    	redirect_to wallets_path
+  	    	return
+  	end
+  	puts amount
+  	a = current_user.user_wallet.balance
+  	puts a
+  	total = a + amount
+    @wallet = UserWallet.find(params[:id])
+    puts total
+    @wallet.balance = total
     respond_to do |format|
       if @wallet.save
-        format.html { redirect_to user_wallet_path, notice: "poast was added successfully." }
+        format.html { redirect_to wallets_path, notice: "money was added successfully." }
         format.json { render :show, status: :created, location: @post }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -25,9 +38,9 @@ class UserWalletController < ApplicationController
     end
   end
   def update
-      @wallet = User_Wallet.find(params[:id])
+      @wallet = UserWallet.find(params[:id])
       if @wallet.update(user_wallet_params)
-      redirect_to new_post_path
+      redirect_to root_path
     else
       render :edit
     end

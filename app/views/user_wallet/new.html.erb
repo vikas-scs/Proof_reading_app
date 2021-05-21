@@ -1,10 +1,29 @@
+<nav class="navbar navbar-light " style="background-color: #e3f2fd;">
+    <a class="navbar-brand">Proof Reading</a>
+    <% if user_signed_in? %>
+        <form class="form-inline nav-item nav-link mr-sm-2">
+        	<strong><%= current_user.email %></strong>&nbsp
+          &nbsp<%= link_to " Edit profile", edit_user_registration_path %>&nbsp
+          &nbsp<%= link_to " logout", destroy_user_session_path, method: :delete %>
+        </form>
+    <% else %>
+        <form class="form-inline">
+            <a class="nav-item nav-link mr-sm-2" href="/admins/sign_in">Admin Login</a>
+            <a class="nav-item nav-link mr-sm-2" href="/users/sign_in">User Login</a>
+            <a class="nav-item nav-link mr-sm-2" href="/users/sign_up">Register</a>
+        </form>
+<% end %>
+</nav>
+<center>
 <h1>Add balance</h1>
-  <%= form_with(model: @wallet) do |form| %>
+  <%= form_with(model: @wallets) do |form| %>
   <div>
     <%= form.label :enter_amount %><br>
     <%= form.number_field :balance %>
+    <%= form.hidden_field :id, autocomplete: current_user.id %>
   </div><br>
 <div class="actions">
     <%= form.submit "Add money" %>
  </div>
  <% end %>
+ </center>

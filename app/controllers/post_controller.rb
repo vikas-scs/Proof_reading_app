@@ -1,7 +1,18 @@
 class PostController < ApplicationController
 	def index
-   
-  end
+       if user_signed_in?
+       	@posts = current_user.posts
+       	   if current_user.sign_in_count <= 1
+               @user = current_user
+              puts params.inspect
+               @wallet = UserWallet.new(user_wallet_params)
+              @wallet.user_id = current_user.id
+              @wallet.balance = 0
+              @wallet.save
+    	      puts "successfully"
+            end
+        end
+    end
   def new
     @post = Post.new 
   end
@@ -13,15 +24,13 @@ class PostController < ApplicationController
   end
   def create
     @post = Post.new(post_params)
-    respond_to do |format|
-      if @post.save
-        format.html { redirect_to @post, notice: "poast was added successfully." }
-        format.json { render :show, status: :created, location: @post }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @task.errors, status: :unprocessable_entity }
-      end
-    end
+    puts "heloooooooo"
+    @post.post = params["post"]
+    @post.user_id = current_user.id
+    @post.status = "pending"
+    @post.save
+    flash[:notice] = "                    post created successfully"
+    redirect_to root_path
   end
   def update
       @post = Post.find(params[:id])
@@ -41,6 +50,9 @@ class PostController < ApplicationController
   end
   private
     def post_params
-      params.require(:post).permit(:post, :status)
+      params.permit(:post, :status, :user_id)
+    end
+    def user_wallet_params
+      params.permit(:balance, :user_id)
     end
 end
