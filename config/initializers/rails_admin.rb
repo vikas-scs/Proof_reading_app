@@ -1,6 +1,9 @@
 require "nested_form/engine"
 require "nested_form/builder_mixin"
 require Rails.root.join('lib', 'rails_admin', 'post_action.rb')
+require Rails.root.join('lib', 'rails_admin', 'invitation_action.rb')
+require Rails.root.join('lib', 'rails_admin', 'read_action.rb')
+
 RailsAdmin.config do |config|
 
   ### Popular gems integration
@@ -12,7 +15,7 @@ RailsAdmin.config do |config|
    config.current_user_method(&:current_admin)
 
   ## == CancanCan ==
-  # config.authorize_with :cancancan
+  config.authorize_with :cancancan
 
   ## == Pundit ==
   # config.authorize_with :pundit
@@ -33,6 +36,16 @@ RailsAdmin.config do |config|
     export
     bulk_delete
     post_action do
+    visible do
+        bindings[:abstract_model].model.to_s == "Admin"
+      end
+    end 
+    invitation_action do
+    visible do
+        bindings[:abstract_model].model.to_s == "Admin"
+      end
+    end 
+    read_action do
     visible do
         bindings[:abstract_model].model.to_s == "Admin"
       end
