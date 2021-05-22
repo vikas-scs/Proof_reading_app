@@ -5,8 +5,8 @@
         	<%= link_to "Add money", wallets_path(id: current_user.id) %> &nbsp
         	 balance:<%= current_user.user_wallet.balance %> &nbsp
         	&nbsp<strong><%= current_user.email %></strong>&nbsp
-          &nbsp<%= link_to " Edit profile", edit_user_registration_path %>&nbsp
-          &nbsp<%= link_to " logout", destroy_user_session_path, method: :delete %>
+          &nbsp<%= link_to "Edit profile", edit_user_registration_path %>&nbsp
+          &nbsp<%= link_to "logout", destroy_user_session_path, method: :delete %>
         </form>
     <% else %>
         <form class="form-inline">
@@ -18,5 +18,38 @@
 </nav><br>
 <% if user_signed_in? %>
   <center><b><h1>welcome</h1></b></center>
-  <center><a href="post/new"><button type="button" class="btn btn-primary">Add Post</button></center>
+  <center>
+  	<table class= "myTable" style="width: 50%">
+    <tr>
+      <th>Post id</th>
+      <th>post view</th>
+  </tr>
+  <% @posts.each do |post| %>
+  <tr>
+      <td><%= post.id %></td>
+       <td><%= link_to "view" , post %></td>
+   </tr>
+   <% end %>
+   </table> 
+   </center><br>   
+<center><a href="post/new"><button type="button" class="btn btn-primary">Add Post</button></center><br>
 <% end %>
+
+<style>
+.myTable { 
+  width: 100%;
+  text-align: left;
+  background-color: white;
+  border-collapse: collapse; 
+  }
+.myTable th { 
+  background-color: lightgreen;
+  color: salmon; 
+  }
+.myTable td, 
+.myTable th { 
+  padding: 10px;
+  border: 1px solid black; 
+  }
+  tr:nth-child(even) {background-color: #F0ffff;}
+</style>

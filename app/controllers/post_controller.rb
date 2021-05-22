@@ -2,7 +2,7 @@ class PostController < ApplicationController
 	def index
        if user_signed_in?
        	@posts = current_user.posts
-       	   if current_user.sign_in_count <= 1
+       	   if current_user.sign_in_count == 1
                @user = current_user
               puts params.inspect
                @wallet = UserWallet.new(user_wallet_params)

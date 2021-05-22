@@ -1,12 +1,15 @@
+require "nested_form/engine"
+require "nested_form/builder_mixin"
+require Rails.root.join('lib', 'rails_admin', 'post_action.rb')
 RailsAdmin.config do |config|
 
   ### Popular gems integration
 
   ## == Devise ==
-  # config.authenticate_with do
-  #   warden.authenticate! scope: :user
-  # end
-  # config.current_user_method(&:current_user)
+  config.authenticate_with do
+  warden.authenticate! scope: :admin
+   end
+   config.current_user_method(&:current_admin)
 
   ## == CancanCan ==
   # config.authorize_with :cancancan
@@ -29,6 +32,11 @@ RailsAdmin.config do |config|
     new
     export
     bulk_delete
+    post_action do
+    visible do
+        bindings[:abstract_model].model.to_s == "Admin"
+      end
+    end 
     show
     edit
     delete

@@ -31,3 +31,7 @@
 
 en:
   hello: "Hello world"
+  admin:
+    actions:
+      post_action:
+        title: "Post invitation management"
