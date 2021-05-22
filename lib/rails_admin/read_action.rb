@@ -1,7 +1,7 @@
 module RailsAdmin
   module Config
     module Actions
-      class PostAction < RailsAdmin::Config::Actions::Base
+      class ReadAction < RailsAdmin::Config::Actions::Base
         RailsAdmin::Config::Actions.register(self)
         register_instance_option :visible? do
            true
@@ -13,23 +13,11 @@ module RailsAdmin
           #FontAwesome Icons
           'icon-share'
         end
-        register_instance_option :pjax? do
-          false
-        end
         register_instance_option :http_methods do
           [:get]
         end
         register_instance_option :controller do
           Proc.new do
-            @posts = Post.all
-            puts @posts
-            @users = User.all
-            @admins = Admin.all
-            @invite = Invite.new
-            puts params.inspect
-
-           
-
            
           end
         end

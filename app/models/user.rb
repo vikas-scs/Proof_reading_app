@@ -5,4 +5,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,:trackable, :confirmable
   has_one :user_wallet
   has_many :posts
+  validates :mobile, presence: :true
+   validates :first_name, presence: :true, format: { with: /\A[a-zA-Z]+\z/}
+   validates :last_name, presence: :true, format: { with: /\A[a-zA-Z]+\z/}
+   validates :mobile, format: { with: /\A[6-9]{1}\d{9}\z/ }, allow_blank: true
 end

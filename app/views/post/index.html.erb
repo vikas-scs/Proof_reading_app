@@ -5,8 +5,8 @@
         	<%= link_to "Add money", wallets_path(id: current_user.id) %> &nbsp
         	 balance:<%= current_user.user_wallet.balance %> &nbsp
         	&nbsp<strong><%= current_user.email %></strong>&nbsp
-          &nbsp<%= link_to "Edit profile", edit_user_registration_path %>&nbsp
-          &nbsp<%= link_to "logout", destroy_user_session_path, method: :delete %>
+          &nbsp<%= link_to " Edit profile", edit_user_registration_path %>&nbsp
+          &nbsp<%= link_to " logout", destroy_user_session_path, method: :delete %>
         </form>
     <% else %>
         <form class="form-inline">
@@ -27,7 +27,7 @@
   <% @posts.each do |post| %>
   <tr>
       <td><%= post.id %></td>
-       <td><%= link_to "view" , post %></td>
+       <td><%= link_to "view", post %></td>
    </tr>
    <% end %>
    </table> 

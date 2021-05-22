@@ -1,1 +1,18 @@
-<h1>hello invitations code here</h1>
+<% @posts.each do |post| %>
+	<% if post.status == "pending" %>
+	  <% @admins.each do |admin| %>
+	  	<% if admin.status == "available" %>
+	  	    <%= admin.email %>
+	  		<%= form_tag(post_action_path, :method => "get") do %>
+	  		<%= hidden_field_tag :"post_id", post.id %>
+             <%= hidden_field_tag :"host_id", current_admin.id %>
+             <%= hidden_field_tag :"reciever_id", admin.id %>
+             <%= hidden_field_tag :"i_status", "pending" %>
+             <%= hidden_field_tag :"r_status", "pending" %>
+             <%= hidden_field_tag :"e_count", 0 %>
+               <%= submit_tag "invite" %>
+            <% end %>
+	  	<% end %>
+	  <% end %>
+	<% end %>
+<% end %>			

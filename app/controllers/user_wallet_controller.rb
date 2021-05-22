@@ -24,7 +24,7 @@ class UserWalletController < ApplicationController
   	a = current_user.user_wallet.balance
   	puts a
   	total = a + amount
-    @wallet = UserWallet.find(params[:id])
+    @wallet = UserWallet.find(current_user.id)
     puts total
     @wallet.balance = total
     respond_to do |format|
