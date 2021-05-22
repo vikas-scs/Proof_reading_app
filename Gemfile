@@ -21,6 +21,7 @@ gem 'devise', '~> 4.7', '>= 4.7.3'
 gem 'rails_admin', '~> 2.1', '>= 2.1.1'
 gem "nested_form"
 gem 'jquery-rails'
+gem 'cancancan'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
