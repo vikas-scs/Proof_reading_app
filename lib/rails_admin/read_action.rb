@@ -13,6 +13,9 @@ module RailsAdmin
           #FontAwesome Icons
           'icon-share'
         end
+        register_instance_option :pjax? do
+          false
+        end
         register_instance_option :http_methods do
           [:get]
         end

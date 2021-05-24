@@ -1,6 +1,6 @@
 <% @posts.each do |post| %>
 	<% if post.status == "pending" %>
-	user_id:<%= post.user_id %><br>
+	user id:<%= post.user_id %><br>
 	post id:<%= post.id %><br>
 	  <% @admins.each do |admin| %>
 	  	<% if admin.status == "available" %>
