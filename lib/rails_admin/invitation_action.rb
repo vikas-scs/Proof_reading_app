@@ -37,6 +37,7 @@ module RailsAdmin
                  elsif @invite.invite_status == "rejected"
                   @admin.status = "available"
                    @admin.save
+                   @invite.destroy
                   flash[:error] = "request rejected successfully"
                   redirect_to index_path
                 end
