@@ -21,8 +21,9 @@ module RailsAdmin
             @invite = Invite.new
             puts params.inspect
             if Invite.exists?(post_id: params["reciever_id"].to_i)
+              puts "hellooo"
               flash[:error] = "invitation already sent"
-              redirect_to post_action_path
+              redirect_to post_action_url
             else
               @invite.post_id = params[:post_id].to_i
               @invite.host_id = params[:host_id].to_i
@@ -32,7 +33,7 @@ module RailsAdmin
               @invite.error_count = params[:e_count]
               if @invite.save
                 flash[:success] = "invitation sent successfully"
-                redirect_to post_action_path
+                redirect_to post_action_url
               end
             end           
            

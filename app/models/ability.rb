@@ -11,14 +11,15 @@ class Ability
          can :update, :all
          can :create, :all
          can :destroy, :all
-         can :post_action, Admin
-         can :invite_action, Admin
+         can :post_action, Post
+         can :invite_action, Post
+         can :reject_action, Post
     elsif user.role.to_s == "proof_reader"
         puts "i am in proof_loader"
         can :read, :all
         can :read_action, Admin
         can :invitation_action, Admin
-        can :reject_action, Admin
+        
 
     end
     # Define abilities for the passed in user here. For example:

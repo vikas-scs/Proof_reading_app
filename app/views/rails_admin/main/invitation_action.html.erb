@@ -1,6 +1,6 @@
 <% @invites.each do |invite| %>
    <p>request from:</p>
-   <%= invite.post_id %>
+   post_id:<%= invite.post_id %>
    <%= form_tag(invitation_action_path, :method => "get") do %> 
       <%= hidden_field_tag :"i_status", "accepted" %>
       <%= hidden_field_tag :"invite_id", invite.id %>

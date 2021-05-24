@@ -39,7 +39,7 @@ RailsAdmin.config do |config|
     bulk_delete
     post_action do
     visible do
-        bindings[:abstract_model].model.to_s == "Admin"
+        bindings[:abstract_model].model.to_s == "Post"
       end
     end 
     invitation_action do
@@ -62,7 +62,7 @@ RailsAdmin.config do |config|
         bindings[:abstract_model].model.to_s == "User"
       end
     end 
-    show
+    # show
     edit
     delete
     show_in_app

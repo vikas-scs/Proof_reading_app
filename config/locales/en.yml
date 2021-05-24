@@ -36,11 +36,11 @@ en:
       post_action:
         title: "Post invitation management"
         breadcrumb: "Posts"
-        menu: "invitation control"
+        menu: "post control"
       invitation_action:
         title: "proof reader invitations"
         breadcrumb: "invitations"
-        menu: "post requests"
+        menu: "invitations requests"
       read_action:
         title: "pending posts"
         breadcrumb: "invitations"
