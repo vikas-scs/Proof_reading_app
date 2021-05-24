@@ -54,7 +54,7 @@ RailsAdmin.config do |config|
     end
     invite_action do
     visible do
-        bindings[:abstract_model].model.to_s == "User"
+        bindings[:abstract_model].model.to_s == "Admin"
       end
     end 
     reject_action do
@@ -62,7 +62,7 @@ RailsAdmin.config do |config|
         bindings[:abstract_model].model.to_s == "User"
       end
     end 
-    # show
+    show
     edit
     delete
     show_in_app

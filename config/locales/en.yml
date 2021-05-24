@@ -45,3 +45,9 @@ en:
         title: "pending posts"
         breadcrumb: "invitations"
         menu: "accepted invitations"
+      reject_action:
+        title: "Read post"
+        breadcrumb: "read action"
+        menu: "Read Post"
+      invite_action: 
+        menu: "read post"

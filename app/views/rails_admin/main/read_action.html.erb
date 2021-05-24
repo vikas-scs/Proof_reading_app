@@ -1,12 +1,26 @@
 <% @invites.each do |invite| %>
   <% if invite.invite_status == "accepted" %>
      post_id:<%= invite.post_id %>
-     <%= form_tag(invite_action_path, :method => "get") do %>
+     <%= form_tag(read_action_path, :method => "get") do %>
      <%= hidden_field_tag :"post_id", invite.post_id %>
        <%= submit_tag "read" %>
        <% end %>
-       <%= form_tag(invite_action_path, :method => "get") do %>
-       <%= hidden_field_tag :"i_status", "rejected" %>
+       <%= form_tag(read_action_path, :method => "get") do %>
+       <%= hidden_field_tag :"is_status", "rejected" %>
+       <%= hidden_field_tag :"invite_id", invite.id %>
+      <% @admins.each do |admin| %>
+            <% if admin.status == "available" %>
+            <% if admin.id == current_admin.id %>
+               <% next %>
+            <% end %>
+            <%= hidden_field_tag :"host_id", invite.host_id %>
+            <%= hidden_field_tag :"poste_id", invite.post_id %>
+             <%= hidden_field_tag :"reciever_id", admin.id %>
+             <%= hidden_field_tag :"i_status", "pending" %>
+             <%= hidden_field_tag :"r_status", "pending" %>
+             <%= hidden_field_tag :"e_count", 0 %> 
+            <% end %> 
+         <% end %>
        <%= submit_tag "reject" %>
        <% end %>
   <% end %>
