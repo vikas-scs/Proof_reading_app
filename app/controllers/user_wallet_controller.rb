@@ -38,12 +38,17 @@ class UserWalletController < ApplicationController
     end
   end
   def update
-      @wallet = UserWallet.find(params[:id])
-      if @wallet.update(user_wallet_params)
-      redirect_to root_path
-    else
-      render :edit
-    end
+      @invite = Invite.find(params[:invite_id].to_i)
+      @invite.status = params[:i_status]
+      if @invite.save
+        if @invite.status == "accept"
+          flash[:success] = "request accepted successfully"
+          redirect_to rails_admin_path
+        elsif @invite.status == "reject"
+          flash[:error] = "request rejected successfully"
+          redirect_to rails_admin_path
+        end
+      end
   end
   private
     def user_wallet_params

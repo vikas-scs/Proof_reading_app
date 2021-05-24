@@ -3,6 +3,8 @@ require "nested_form/builder_mixin"
 require Rails.root.join('lib', 'rails_admin', 'post_action.rb')
 require Rails.root.join('lib', 'rails_admin', 'invitation_action.rb')
 require Rails.root.join('lib', 'rails_admin', 'read_action.rb')
+require Rails.root.join('lib', 'rails_admin', 'invite_action.rb')
+require Rails.root.join('lib', 'rails_admin', 'reject_action.rb')
 
 RailsAdmin.config do |config|
 
@@ -48,6 +50,16 @@ RailsAdmin.config do |config|
     read_action do
     visible do
         bindings[:abstract_model].model.to_s == "Admin"
+      end
+    end
+    invite_action do
+    visible do
+        bindings[:abstract_model].model.to_s == "User"
+      end
+    end 
+    reject_action do
+    visible do
+        bindings[:abstract_model].model.to_s == "User"
       end
     end 
     show

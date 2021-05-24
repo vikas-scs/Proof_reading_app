@@ -1,1 +1,14 @@
-<h1>proof loader invitations</h1>
+<% @invites.each do |invite| %>
+   <p>request from:</p>
+   <%= invite.post_id %>
+   <%= form_tag(invitation_action_path, :method => "get") do %> 
+      <%= hidden_field_tag :"i_status", "accepted" %>
+      <%= hidden_field_tag :"invite_id", invite.id %>
+      <%= submit_tag "accept" %>
+    <% end %>
+    <%= form_tag(invitation_action_path, :method => "get") do %> 
+      <%= hidden_field_tag :"i_status", "rejected" %>
+      <%= hidden_field_tag :"invite_id", invite.id %>
+      <%= submit_tag "reject" %>
+    <% end %>
+ <% end %>

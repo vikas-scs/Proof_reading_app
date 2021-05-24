@@ -3,7 +3,7 @@
 	  <% @admins.each do |admin| %>
 	  	<% if admin.status == "available" %>
 	  	    <%= admin.email %>
-	  		<%= form_tag(post_action_path, :method => "get") do %>
+	  		<%= form_tag(invite_action_path, :method => "get") do %>
 	  		<%= hidden_field_tag :"post_id", post.id %>
              <%= hidden_field_tag :"host_id", current_admin.id %>
              <%= hidden_field_tag :"reciever_id", admin.id %>
@@ -15,4 +15,4 @@
 	  	<% end %>
 	  <% end %>
 	<% end %>
-<% end %>			
+<% end %>		

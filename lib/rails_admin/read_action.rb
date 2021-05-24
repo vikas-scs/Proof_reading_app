@@ -18,7 +18,7 @@ module RailsAdmin
         end
         register_instance_option :controller do
           Proc.new do
-           
+           @invites = Invite.where(reciever_id: current_admin.id)
           end
         end
       end
