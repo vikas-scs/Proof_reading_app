@@ -1,7 +1,7 @@
 <% @invites.each do |invite| %>
   <% if invite.invite_status == "accepted" %>
      post_id:<%= invite.post_id %>
-     <%= form_tag(read_action_path, :method => "get") do %>
+     <%= form_tag(reject_action_path, :method => "get") do %>
      <%= hidden_field_tag :"post_id", invite.post_id %>
        <%= submit_tag "read" %>
        <% end %>

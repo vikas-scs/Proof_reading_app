@@ -1,1 +1,178 @@
-<h1>timer,read code here</h1>
+  <% corrected = Spellchecker.correct("exels") %>
+<%= corrected %>
+<center>
+    <h1>Timer</h1>
+    <div id="time">00:00:00</div>
+    <div class="btns-container">
+        <button id="start_btn" onclick="start()">READ</button>
+        <button id="pause_btn" onclick="pause()">PAUSE</button>
+        <button id="reset_btn" onclick="reset()">END</button>
+            <table class= "myTable" style="width: 100%%">
+            	<tr>
+  		            <th><b>post</b></th>
+  		            <th ><b>correcting code</b></th>
+  		            <th ><b>time</b></th>
+  		             <th ><b>Error count</b></th>    
+                </tr>
+                <tr>
+                	<td id = "post"><%= @post.post %></td>
+                	<td id = "correcting"></td>
+                	<td id = "timeTaken"></td>
+                	<td id = "ErrorCount"></td>         
+                </tr>
+            </table>
+    </div>
+</center>
+
+
+<script>
+	const timer = document.querySelector('#time');
+const start_btn = document.querySelector('#start_btn');
+const pause_btn = document.querySelector('#pause_btn');
+const reset_btn = document.querySelector('#reset_btn');
+let Ecount = 0;
+let time = 0,
+  interval;
+
+function showTime() {
+  timer.innerHTML = toHHMMSS(time);
+  let correcting = $("#correcting").html();
+  let post=$("#post").html();
+  let res =post.split(" ");
+  if(res.length > time) {
+  	// corrected = Spellchecker.correct(res[time])
+  	// if(corrected != res[time])
+  	//  {
+  	// 	Ecount += 1;
+  	// 	$("#correcting").html(correcting+" "+corrected);
+  	//  }
+  	//  else
+  	 // {
+         $("#correcting").html(correcting+" "+res[time]);
+     // }
+  }
+  else
+  {
+   	  $("#timeTaken").html(time+" seconds");
+   	  // $("#ErrorCount").html(Ecount);
+      reset(); 
+  }
+  time += 1;
+  
+  // for(i =0;i<= res.length;i++)
+  // {
+  // $("#correcting").html(correcting+res[i])
+  //  }
+
+}
+
+function start() {
+	
+ $("#correcting").html("");
+
+  interval = setInterval(showTime, 1000);
+  hideBtn([start_btn]);
+  showBtn([pause_btn, reset_btn]);
+}
+
+function pause() {
+  if (interval) {
+    clearInterval(interval);
+    interval = null;
+    pause_btn.innerHTML = 'RESUME';
+  } else {
+    interval = setInterval(showTime, 1000);
+    pause_btn.innerHTML = 'PAUSE';
+  }
+}
+
+function reset() {
+  clearInterval(interval);
+  interval = null;
+  pause_btn.innerHTML = 'PAUSE';
+  time = 0;
+  timer.innerHTML = toHHMMSS(time);
+  hideBtn([pause_btn, reset_btn]);
+  showBtn([start_btn]);
+}
+
+function toHHMMSS(time) {
+  let hours = Math.floor(time / 3600);
+  let minutes = Math.floor((time - hours * 3600) / 60);
+  let seconds = time - hours * 3600 - minutes * 60;
+
+  hours = `${hours}`.padStart(2, '0');
+  minutes = `${minutes}`.padStart(2, '0');
+  seconds = `${seconds}`.padStart(2, '0');
+
+  return hours + ':' + minutes + ':' + seconds;
+}
+
+function showBtn(btnArr) {
+  btnArr.forEach((btn) => (btn.style.display = 'inline-block'));
+}
+function hideBtn(btnArr) {
+  btnArr.forEach((btn) => (btn.style.display = 'none'));
+}
+</script>
+<style>
+	body {
+  background: gainsboro;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  text-align: center;
+}
+
+#time {
+  font-size: 50px;
+}
+
+.btns-container {
+  margin: 10px 0;
+}
+
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 2px;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  filter: grayscale(0.5);
+}
+button:focus {
+  outline: none;
+}
+
+#start_btn {
+  background: green;
+}
+#pause_btn {
+  background: blue;
+  display: none;
+}
+#reset_btn {
+  background: red;
+  display: none;
+}
+.myTable { 
+  width: 100%;
+  text-align: left;
+  background-color: white;
+  border-collapse: collapse; 
+  }
+.myTable th { 
+  background-color: lightblue;
+  color: salmon; 
+  }
+.myTable td, 
+.myTable th { 
+  padding: 10px;
+  border: 1px solid black; 
+  }
+  tr:nth-child(even) {background-color: #F0ffff;}
+</style>
