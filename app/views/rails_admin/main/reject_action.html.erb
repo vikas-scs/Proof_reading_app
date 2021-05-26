@@ -1,30 +1,31 @@
-  <% corrected = Spellchecker.correct("exels") %>
-<%= corrected %>
 <center>
     <h1>Timer</h1>
     <div id="time">00:00:00</div>
     <div class="btns-container">
         <button id="start_btn" onclick="start()">READ</button>
         <button id="pause_btn" onclick="pause()">PAUSE</button>
-        <button id="reset_btn" onclick="reset()">END</button>
+        <button id="reset_btn" onclick="reset()">Read Completed</button>
             <table class= "myTable" style="width: 100%%">
             	<tr>
   		            <th><b>post</b></th>
   		            <th ><b>correcting code</b></th>
-  		            <th ><b>time</b></th>
-  		             <th ><b>Error count</b></th>    
+  		            <th ><b>Read complete</b></th>
+  		            <th ><b>Time taken</b></th>  
+
                 </tr>
                 <tr>
                 	<td id = "post"><%= @post.post %></td>
-                	<td id = "correcting"></td>
-                	<td id = "timeTaken"></td>
-                	<td id = "ErrorCount"></td>         
+                	<%= form_tag(reject_action_path, :method => "get") do %>
+                	<%= hidden_field_tag :"invite_id", @invite_id %>
+                	<%= hidden_field_tag :"post_id", @post.id %>
+                      <td id = "correcting"><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
+                	<td><%= submit_tag("send to user") %></td>
+                	<% end %>
+                	<td id = "timeTaken"></td>         
                 </tr>
             </table>
     </div>
 </center>
-
-
 <script>
 	const timer = document.querySelector('#time');
 const start_btn = document.querySelector('#start_btn');
@@ -36,40 +37,10 @@ let time = 0,
 
 function showTime() {
   timer.innerHTML = toHHMMSS(time);
-  let correcting = $("#correcting").html();
-  let post=$("#post").html();
-  let res =post.split(" ");
-  if(res.length > time) {
-  	// corrected = Spellchecker.correct(res[time])
-  	// if(corrected != res[time])
-  	//  {
-  	// 	Ecount += 1;
-  	// 	$("#correcting").html(correcting+" "+corrected);
-  	//  }
-  	//  else
-  	 // {
-         $("#correcting").html(correcting+" "+res[time]);
-     // }
-  }
-  else
-  {
-   	  $("#timeTaken").html(time+" seconds");
-   	  // $("#ErrorCount").html(Ecount);
-      reset(); 
-  }
   time += 1;
-  
-  // for(i =0;i<= res.length;i++)
-  // {
-  // $("#correcting").html(correcting+res[i])
-  //  }
-
 }
 
 function start() {
-	
- $("#correcting").html("");
-
   interval = setInterval(showTime, 1000);
   hideBtn([start_btn]);
   showBtn([pause_btn, reset_btn]);
@@ -87,6 +58,7 @@ function pause() {
 }
 
 function reset() {
+  $("#timeTaken").html(time+" seconds");
   clearInterval(interval);
   interval = null;
   pause_btn.innerHTML = 'PAUSE';

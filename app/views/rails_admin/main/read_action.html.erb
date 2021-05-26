@@ -3,6 +3,7 @@
      post_id:<%= invite.post_id %>
      <%= form_tag(reject_action_path, :method => "get") do %>
      <%= hidden_field_tag :"post_id", invite.post_id %>
+     <%= hidden_field_tag :"invite_id", invite.id %>
        <%= submit_tag "read" %>
        <% end %>
        <%= form_tag(read_action_path, :method => "get") do %>
