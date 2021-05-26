@@ -1,7 +1,7 @@
 module RailsAdmin
   module Config
     module Actions
-      class RejectAction < RailsAdmin::Config::Actions::Base
+      class AcceptAction < RailsAdmin::Config::Actions::Base
         RailsAdmin::Config::Actions.register(self)
         register_instance_option :visible? do
            true
@@ -23,6 +23,7 @@ module RailsAdmin
                @post = Post.find(params[:post_id])
                @invite_id = params[:invite_id]
             else
+              puts "helloooo"
                @invite = Invite.find(params[:invite_id])
                @invite.read_status = params[:corrected]
                @error_count = 0

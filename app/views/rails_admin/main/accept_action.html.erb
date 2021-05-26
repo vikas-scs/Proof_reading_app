@@ -11,17 +11,18 @@
   		            <th ><b>correcting code</b></th>
   		            <th ><b>Read complete</b></th>
   		            <th ><b>Time taken</b></th>  
-
                 </tr>
                 <tr>
                 	<td id = "post"><%= @post.post %></td>
-                	<%= form_tag(reject_action_path, :method => "get") do %>
+                	<%= form_tag(accept_action_path, :method => "get") do %>
                 	<%= hidden_field_tag :"invite_id", @invite_id %>
                 	<%= hidden_field_tag :"post_id", @post.id %>
-                      <td id = "correcting"><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
+                      <td><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
                 	<td><%= submit_tag("send to user") %></td>
                 	<% end %>
-                	<td id = "timeTaken"></td>         
+                	<td id = "timeTaken"></td>
+                	<%= @a = id="timeTaken" %> 
+                	      
                 </tr>
             </table>
     </div>
@@ -58,11 +59,11 @@ function pause() {
 }
 
 function reset() {
+	alert(time);
   $("#timeTaken").html(time+" seconds");
   clearInterval(interval);
   interval = null;
   pause_btn.innerHTML = 'PAUSE';
-  time = 0;
   timer.innerHTML = toHHMMSS(time);
   hideBtn([pause_btn, reset_btn]);
   showBtn([start_btn]);

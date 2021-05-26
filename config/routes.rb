@@ -16,6 +16,6 @@ Rails.application.routes.draw do
   post 'user_wallet/:id', to: 'user_wallet#create'
   get 'user_wallet/:id', to: 'user_wallet#show', as: :wallet
   get 'user_wallet/:id/edit', to: 'user_wallet#edit', as: :edit_wallet
-  patch 'user_wallet/:id/edit', to: 'user_wallet#update', as: :wallet_update
+  patch 'user_wallet/:id', to: 'user_wallet#update', as: :wallet_update
   put 'user_wallet/:id', to: 'user_wallet#update'
 end

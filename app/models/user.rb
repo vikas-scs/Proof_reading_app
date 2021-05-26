@@ -9,4 +9,5 @@ class User < ApplicationRecord
    validates :first_name, presence: :true, format: { with: /\A[a-zA-Z]+\z/}
    validates :last_name, presence: :true, format: { with: /\A[a-zA-Z]+\z/}
    validates :mobile, format: { with: /\A[6-9]{1}\d{9}\z/ }, allow_blank: true
+   has_and_belongs_to_many :cupons
 end

@@ -22,6 +22,7 @@ module RailsAdmin
         register_instance_option :controller do
           Proc.new do
             @admins = Admin.all
+            @cost = Cost.find(1)
             @admin = Admin.find(current_admin.id)
             @invites = Invite.where(reciever_id: current_admin.id)
            if params[:post_id].present?
@@ -29,8 +30,9 @@ module RailsAdmin
               redirect_to reject_action_path
           end
           if params[:i_status].present?
+            if @cost.fine_amount < @admin.wallet
               @invite = Invite.find(params[:invite_id].to_i)
-               fine = @admin.wallet - 30
+               fine = @admin.wallet - @cost.fine_amount
                @admin.wallet = fine
                @admin.status = "available"
                @admin.save
@@ -43,7 +45,11 @@ module RailsAdmin
                 if @invite.save
                   flash[:error] = "You got fine invitation diverted successfully"
                   redirect_to index_path
-               end
+                end
+              else
+                flash[:error] = "You have insufficient wallet to reject, kindly start proofreading"
+                redirect_to index_path
+              end
             end
           end
         end

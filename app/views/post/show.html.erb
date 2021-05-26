@@ -1,1 +1,33 @@
-<h1> project status available here </h1>
+<nav class="navbar navbar-light " style="background-color: #e3f2fd;">
+    <a class="navbar-brand">Proof Reading</a>
+    <% if user_signed_in? %>
+        <form class="form-inline nav-item nav-link mr-sm-2">
+        	<%= link_to "Add money", wallets_path(id: current_user.id) %> &nbsp
+        	 balance:<%= current_user.user_wallet.balance %> &nbsp
+        	&nbsp<strong><%= current_user.email %></strong>&nbsp
+          &nbsp<%= link_to " Edit profile", edit_user_registration_path %>&nbsp
+          &nbsp<%= link_to " logout", destroy_user_session_path, method: :delete %>
+        </form>
+    <% else %>
+        <form class="form-inline">
+            <a class="nav-item nav-link mr-sm-2" href="/admins/sign_in">Admin Login</a>
+            <a class="nav-item nav-link mr-sm-2" href="/users/sign_in">User Login</a>
+            <a class="nav-item nav-link mr-sm-2" href="/users/sign_up">Register</a>
+        </form>
+    <% end %>
+</nav><br>
+<center>
+<% if @post.status == "corrected" %>
+  <h1> proof reading done </h1>
+  corrected post:<p><%= @invite.read_status %>
+  <%= form_tag(wallet_update_path(id: @post.id), :method => "patch") do %>
+    <%= hidden_field_tag :"invite_id", @invite.id %>
+      <%= submit_tag "accept" %>
+  <% end %>
+  <% elsif @post.status == "done" %>
+      <h1> proof reading already done </h1>
+
+<% else %>
+<h1> proof reading is not yet done </h1>
+<% end %>
+</center>

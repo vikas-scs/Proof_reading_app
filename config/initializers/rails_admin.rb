@@ -4,7 +4,7 @@ require Rails.root.join('lib', 'rails_admin', 'post_action.rb')
 require Rails.root.join('lib', 'rails_admin', 'invitation_action.rb')
 require Rails.root.join('lib', 'rails_admin', 'read_action.rb')
 require Rails.root.join('lib', 'rails_admin', 'invite_action.rb')
-require Rails.root.join('lib', 'rails_admin', 'reject_action.rb')
+require Rails.root.join('lib', 'rails_admin', 'accept_action.rb')
 
 RailsAdmin.config do |config|
 
@@ -57,7 +57,7 @@ RailsAdmin.config do |config|
         bindings[:abstract_model].model.to_s == "Admin"
       end
     end 
-    reject_action do
+    accept_action do
     visible do
         bindings[:abstract_model].model.to_s == "User"
       end

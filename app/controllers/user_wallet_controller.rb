@@ -38,16 +38,29 @@ class UserWalletController < ApplicationController
     end
   end
   def update
-      @invite = Invite.find(params[:invite_id].to_i)
-      @invite.status = params[:i_status]
-      if @invite.save
-        if @invite.status == "accept"
-          flash[:success] = "request accepted successfully"
-          redirect_to rails_admin_path
-        elsif @invite.status == "reject"
-          flash[:error] = "request rejected successfully"
-          redirect_to rails_admin_path
-        end
+      @post = Post.find(params[:id])
+      @user = User.find(@post.user_id)
+      @cost = Cost.find(1)
+      @user_wallet = UserWallet.find(current_user.id)
+      @invite = Invite.find(params[:invite_id])
+      @admin = Admin.find(@invite.host_id)
+      @proofread = Admin.find(@invite.reciever_id)
+      @total = @cost.word_cost * @invite.error_count
+      @cutoff = @user_wallet.lock_balance - @total
+      @user_wallet.lock_balance = @cutoff
+      @percentage = @total % @cost.admin_commission
+      @admin_wallet = @admin.wallet + @percentage
+      @admin.wallet = @admin_wallet
+      @pf = @total - @percentage
+      @proof = @pf + @proofread.wallet
+      @proofread.wallet = @proof
+      @post.status = "done"
+      @post.save
+      @user_wallet.save
+      @admin.save
+      if @proofread.save
+        flash[:alert] = "money distributed successfully"
+        redirect_to root_path
       end
   end
   private
