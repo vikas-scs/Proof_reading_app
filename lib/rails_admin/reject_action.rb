@@ -18,7 +18,28 @@ module RailsAdmin
         end
         register_instance_option :controller do
           Proc.new do
-           
+            puts params.inspect
+            if !params[:corrected].present?
+               @post = Post.find(params[:post_id])
+               @invite_id = params[:invite_id]
+            else
+               @invite = Invite.find(params[:invite_id])
+               @invite.read_status = params[:corrected]
+               @error_count = 0
+               @post = Post.find(params[:post_id])
+               pos  = @post.post.split(" ")
+               cor = params[:corrected].split(" ")
+               for i in 0..pos.length-1 
+                  if pos[i] != cor[i]
+                    @error_count += 1
+                  end
+                end
+                @invite.error_count = @error_count
+                if @invite.save
+                  flash[:success] = "proof reading done successfully"
+                  redirect_to index_path
+                end
+            end
           end           
         end
       end

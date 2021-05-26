@@ -25,6 +25,7 @@ module RailsAdmin
             @admin = Admin.find(current_admin.id)
             @invites = Invite.where(reciever_id: current_admin.id)
            if params[:post_id].present?
+              puts params.inspect
               redirect_to reject_action_path
           end
           if params[:i_status].present?
