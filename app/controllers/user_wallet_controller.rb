@@ -49,6 +49,7 @@ class UserWalletController < ApplicationController
       @cutoff = @user_wallet.lock_balance - @total
       @user_wallet.lock_balance = @cutoff
       @percentage = @total % @cost.admin_commission
+      puts @percentage
       @admin_wallet = @admin.wallet + @percentage
       @admin.wallet = @admin_wallet
       @pf = @total - @percentage
@@ -59,6 +60,7 @@ class UserWalletController < ApplicationController
       @user_wallet.save
       @admin.save
       if @proofread.save
+        @invite.destroy
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
       end

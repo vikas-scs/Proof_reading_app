@@ -29,19 +29,28 @@ module RailsAdmin
               puts params.inspect
               redirect_to reject_action_path
           end
-          if params[:i_status].present?
+          if params[:is_status].present?
             if @cost.fine_amount < @admin.wallet
               @invite = Invite.find(params[:invite_id].to_i)
                fine = @admin.wallet - @cost.fine_amount
                @admin.wallet = fine
                @admin.status = "available"
-               @admin.save
-                @invite.post_id = params[:poste_id].to_i
-               @invite.host_id = params[:host_id].to_i
-               @invite.reciever_id = params[:reciever_id].to_i
-                @invite.invite_status = params[:i_status]
-                @invite.read_status = params[:r_status]
-                @invite.error_count = params[:e_count]
+               @invite.invite_status = "rejected"
+               @admin.save 
+                @admins.each do |admin| 
+                  if admin.role == "proof_reader"
+                      if admin.id != current_admin.id
+                    @invit = Invite.new
+                    @invit.post_id = params[:poste_id].to_i
+                    @invit.host_id = params[:host_id].to_i
+                    @invit.reciever_id = admin.id
+                    @invit.invite_status = params[:i_status]
+                    @invit.read_status = params[:r_status]
+                    @invit.error_count = params[:e_count]
+                    @invit.save
+                  end
+                end
+                end
                 if @invite.save
                   flash[:error] = "You got fine invitation diverted successfully"
                   redirect_to index_path

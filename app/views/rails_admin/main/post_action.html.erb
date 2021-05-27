@@ -2,19 +2,13 @@
 	<% if post.status == "pending" %>
 	user id:<%= post.user_id %><br>
 	post id:<%= post.id %><br>
-	  <% @admins.each do |admin| %>
-	  	<% if admin.status == "available" %>
-	  	    proof_reader:<%= admin.email %><br>
-	  		<%= form_tag(post_action_path, :method => "get") do %>
-	  		<%= hidden_field_tag :"post_id", post.id %>
+	  		 <%= form_tag(post_action_path, :method => "get") do %>
+	  		 <%= hidden_field_tag :"post_id", post.id %>
              <%= hidden_field_tag :"host_id", current_admin.id %>
-             <%= hidden_field_tag :"reciever_id", admin.id %>
              <%= hidden_field_tag :"i_status", "pending" %>
              <%= hidden_field_tag :"r_status", "pending" %>
              <%= hidden_field_tag :"e_count", 0 %>
-             <%= submit_tag "invite" %>
-            <% end %>
-	  	<% end %>
+             <%= submit_tag "invite" %><br>
 	  <% end %>
 	<% end %>
 <% end %>		

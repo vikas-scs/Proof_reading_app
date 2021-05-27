@@ -21,38 +21,36 @@
                 	<td><%= submit_tag("send to user") %></td>
                 	<% end %>
                 	<td id = "timeTaken"></td>
-                	<%= @a = id="timeTaken" %> 
-                	      
                 </tr>
             </table>
     </div>
 </center>
 <script>
 	const timer = document.querySelector('#time');
-const start_btn = document.querySelector('#start_btn');
-const pause_btn = document.querySelector('#pause_btn');
-const reset_btn = document.querySelector('#reset_btn');
-let Ecount = 0;
-let time = 0,
-  interval;
+    const start_btn = document.querySelector('#start_btn');
+    const pause_btn = document.querySelector('#pause_btn');
+    const reset_btn = document.querySelector('#reset_btn');
+    let Ecount = 0;
+    let time = 0,
+    interval;
 
-function showTime() {
-  timer.innerHTML = toHHMMSS(time);
-  time += 1;
-}
+     function showTime() {
+       timer.innerHTML = toHHMMSS(time);
+       time += 1;
+     }
 
-function start() {
-  interval = setInterval(showTime, 1000);
-  hideBtn([start_btn]);
-  showBtn([pause_btn, reset_btn]);
-}
+      function start() {
+        interval = setInterval(showTime, 1000);
+        hideBtn([start_btn]);
+     showBtn([pause_btn, reset_btn]);
+    }
 
-function pause() {
-  if (interval) {
-    clearInterval(interval);
-    interval = null;
+    function pause() {
+          if (interval) {
+       clearInterval(interval);
+     interval = null;
     pause_btn.innerHTML = 'RESUME';
-  } else {
+    } else {
     interval = setInterval(showTime, 1000);
     pause_btn.innerHTML = 'PAUSE';
   }

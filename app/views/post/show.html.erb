@@ -23,10 +23,11 @@
   <%= form_tag(wallet_update_path(id: @post.id), :method => "patch") do %>
     <%= hidden_field_tag :"invite_id", @invite.id %>
       <%= submit_tag "accept" %>
+      <%= link_to "apply coupon?", wallet_path(id: 1) %>
   <% end %>
   <% elsif @post.status == "done" %>
+      <%= @post.post %><br>
       <h1> proof reading already done </h1>
-
 <% else %>
 <h1> proof reading is not yet done </h1>
 <% end %>

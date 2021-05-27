@@ -10,16 +10,14 @@ class PostController < ApplicationController
   def show
     @post = Post.find(params[:id])
     puts @post.post
-    if Invite.exists?(post_id: params[:id]) 
+    if Invite.exists?(post_id: params[:id], invite_status: "accept") 
          puts "hellooooooooo"                        #checking whether post is exist in invitations
-      @invi = Invite.where(post_id: params[:id])
+      @invi = Invite.where(post_id: params[:id], invite_status: "accept")
       @idd = @invi.ids
-      puts @idd
-      @idd.each do
          @invite = Invite.find(@idd[0])                             #getting invitation id from post status
-      end
       puts @invite.id
        if @invite.error_count >= 0
+         @post.post = @invite.read_status
          @post.status = "corrected"                                #assigning status  for  post if proofreading is done  
          @post.save
       end

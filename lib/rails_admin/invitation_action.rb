@@ -30,12 +30,10 @@ module RailsAdmin
            if params[:invite_id].present?
               puts "helloooooooooo"
               @invite = Invite.find(params[:invite_id].to_i)
-              if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :read_status => "accepted")
+              if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :invite_status => "accepted")
                 puts "rihftttttttt"
                 flash[:error] = "invitation accepted by another proofreader"
-                @invite.destroy
                 redirect_to index_path
-                return
               end
               @invite.invite_status = params[:is_status]
               if @invite.save
@@ -43,21 +41,28 @@ module RailsAdmin
                 if @invite.invite_status == "accepted"
                   @admin.status = "busy"
                   if @admin.save
-                  flash[:success] = "request accepted successfully"
-                  redirect_to index_path
-                 end
-               elsif @invite.invite_status == "rejected"
-                  puts "hello"
-                  @invite.post_id = params[:post_id].to_i
-                  @invite.host_id = params[:host_id].to_i
-                  @invite.reciever_id = params[:reciever_id].to_i
-                  @invite.invite_status = params[:i_status]
-                  @invite.read_status = params[:r_status]
-                  @invite.error_count = params[:e_count]
-                  if @invite.save
-                    flash[:success] = "invitation diverted successfully"
+                    flash[:success] = "request accepted successfully"
                     redirect_to index_path
                   end
+                elsif @invite.invite_status == "rejected"
+                  puts "hello"
+                  @admins.each do |admin| 
+                    if admin.role == "proof_reader"
+                      if admin.id != current_admin.id
+                       puts "its comming here"
+                       @invit = Invite.new
+                       @invit.post_id = params[:post_id].to_i
+                       @invit.host_id = params[:host_id].to_i
+                       @invit.reciever_id = admin.id
+                       @invit.invite_status = params[:i_status]
+                       @invit.read_status = params[:r_status]
+                       @invit.error_count = params[:e_count]
+                       @invit.save
+                     end
+                    end
+                  end
+                  flash[:success] = "invitation diverted successfully"
+                  redirect_to index_path
                 end
               end
             end

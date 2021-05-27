@@ -25,6 +25,7 @@ module RailsAdmin
             else
               puts "helloooo"
                @invite = Invite.find(params[:invite_id])
+               @post = Post.find(@invite.post_id)
                @invite.read_status = params[:corrected]
                @error_count = 0
                @post = Post.find(params[:post_id])
@@ -36,6 +37,9 @@ module RailsAdmin
                   end
                 end
                 @invite.error_count = @error_count
+                @invite.invite_status = "accept"
+                @post.status = "corrected"
+                @post.save
                 if @invite.save
                   flash[:success] = "proof reading done successfully"
                   redirect_to index_path
