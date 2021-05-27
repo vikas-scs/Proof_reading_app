@@ -21,40 +21,52 @@ module RailsAdmin
         end
         register_instance_option :controller do
           Proc.new do
-            @posts = Post.all
-            puts @posts
-            @users = User.all
-            @admins = Admin.all
+            if params[:id].present?
             puts params.inspect
-            if params[:host_id].present?
-                @arr = Array.new
-                @arr.clear
-                @admins.each do |admin|
-                  if admin.status == "available"
-                    @invite = Invite.new
-                    @invite.post_id = params[:post_id].to_i
-                    @invite.host_id = params[:host_id].to_i
-                    @invite.reciever_id = admin.id
-                    @invite.invite_status = params[:i_status]
-                    @invite.read_status = params[:r_status]
-                    @invite.error_count = params[:e_count]
-                    if Invite.exists?(:reciever_id => params["reciever_id"].to_i, :post_id => params["post_id"].to_i)
-                     next
+            @id = params[:id]
+            puts @id
+            @post = Post.find(@id)
+            if @post.status == "pending" 
+              @arr = Array.new
+              @arr.clear
+              puts "coming here"
+              @admin = Admin.where(status: "available")
+              @add = @admin.ids
+              if @admin.length != 0
+                for i in 0..@admin.length - 1
+                    if @add[i] == current_admin.id
+                      next
+                    elsif Invite.exists?(:post_id => params[:post_id].to_i,:reciever_id => @add[i])
+                       next
+                    else
+                      puts "its comming here"
+                      @invit = Invite.new
+                      @invit.post_id = @id
+                      @invit.host_id = current_admin.id
+                      @invit.reciever_id = @add[i]
+                      @invit.invite_status = "pending"
+                      @invit.read_status = "pending"
+                      @invit.error_count = 0
+                      @invit.save
+                      @admin = Admin.find(@add[i])
+                      @arr << @admin.email
                     end
-                    @arr << admin.email
-                    @invite.save
-                  end
                 end
-                if !@arr.empty?
-                   flash[:success] = "invitation sent successfully to #{@arr}"
-                   redirect_to index_path
-                 else
-                   flash[:error] = "invitation already sent"
-                   redirect_to index_path
-                 end
-            end           
+              else
+                flash[:error] = "all proofreaders are busy can't send"
+                redirect_to index_path
+              end
+              if !@arr.empty?
+                 flash[:success] = "invitation sent successfully to #{@arr}"
+                redirect_to index_path
+              end
+            else
+              flash[:error] = "post proofreading is completed"
+              redirect_to index_path
+            end
           end
-        end
+          end
+        end           
       end
     end 
   end

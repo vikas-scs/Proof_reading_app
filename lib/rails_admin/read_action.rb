@@ -36,20 +36,27 @@ module RailsAdmin
                @admin.wallet = fine
                @admin.status = "available"
                @invite.invite_status = "rejected"
+               puts "comiiiiiiiiiiiiii"
                @admin.save 
-                @admins.each do |admin| 
-                  if admin.role == "proof_reader"
-                      if admin.id != current_admin.id
-                    @invit = Invite.new
-                    @invit.post_id = params[:poste_id].to_i
-                    @invit.host_id = params[:host_id].to_i
-                    @invit.reciever_id = admin.id
-                    @invit.invite_status = params[:i_status]
-                    @invit.read_status = params[:r_status]
-                    @invit.error_count = params[:e_count]
-                    @invit.save
+                @adm = Admin.where(status: "available")
+                puts "trrsssssssss"
+                @add = @adm.ids
+                if !@adm.length == 0
+                    for i in 0..@adm.length - 1
+                      if @add[i] != current_admin.id
+                        @invit = Invite.new
+                        @invit.post_id = params[:poste_id].to_i
+                        @invit.host_id = params[:host_id].to_i
+                        @invit.reciever_id = @add[i]
+                         @invit.invite_status = params[:i_status]
+                        @invit.read_status = params[:r_status]
+                        @invit.error_count = params[:e_count]
+                       @invit.save
                   end
-                end
+                 end
+               else
+                  flash[:error] = "all proofreaders are busy can't divert"
+                  redirect_to index_path
                 end
                 if @invite.save
                   flash[:error] = "You got fine invitation diverted successfully"

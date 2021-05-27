@@ -21,12 +21,7 @@ module RailsAdmin
         end
         register_instance_option :controller do
           Proc.new do
-            puts current_admin.id
-           @invites = Invite.where(reciever_id: current_admin.id)
-           @admin = Admin.find(current_admin.id)
-           @admins = Admin.all
-           puts params.inspect
-           puts "helloooooooooo"
+            @invites = Invite.all
            if params[:invite_id].present?
               puts "helloooooooooo"
               @invite = Invite.find(params[:invite_id].to_i)
@@ -36,34 +31,44 @@ module RailsAdmin
                 redirect_to index_path
               end
               @invite.invite_status = params[:is_status]
-              if @invite.save
-                puts "helloooooo"
-                if @invite.invite_status == "accepted"
-                  @admin.status = "busy"
-                  if @admin.save
-                    flash[:success] = "request accepted successfully"
-                    redirect_to index_path
-                  end
-                elsif @invite.invite_status == "rejected"
-                  puts "hello"
-                  @admins.each do |admin| 
-                    if admin.role == "proof_reader"
-                      if admin.id != current_admin.id
-                       puts "its comming here"
-                       @invit = Invite.new
-                       @invit.post_id = params[:post_id].to_i
-                       @invit.host_id = params[:host_id].to_i
-                       @invit.reciever_id = admin.id
-                       @invit.invite_status = params[:i_status]
-                       @invit.read_status = params[:r_status]
-                       @invit.error_count = params[:e_count]
-                       @invit.save
-                     end
-                    end
-                  end
-                  flash[:success] = "invitation diverted successfully"
+              @invite.save
+              @admin = Admin.find(current_admin.id)
+              puts "helloooooo"
+              if @invite.invite_status == "accepted"
+                @admin.status = "busy"
+                if @admin.save
+                  flash[:success] = "request accepted successfully"
                   redirect_to index_path
                 end
+              elsif @invite.invite_status == "rejected"
+                puts "hello"
+                puts current_admin.id
+                @adm = Admin.where(status: "available")
+                @add = @adm.ids
+                if @adm.length >= 1
+                for i in 0..@adm.length - 1
+                  if @add[i] == current_admin.id
+                    next
+                  elsif Invite.exists?(:post_id => params[:post_id].to_i,:reciever_id => @add[i])
+                    next
+                  else
+                    puts "its comming here"
+                    @invit = Invite.new
+                    @invit.post_id = params[:post_id].to_i
+                    @invit.host_id = params[:host_id].to_i
+                    @invit.reciever_id = @add[i]
+                    @invit.invite_status = "pending"
+                    @invit.read_status = "pending"
+                    @invit.error_count = 0
+                    @invit.save
+                  end
+                end
+              else
+                flash[:error] = "all proofreaders are busy can't divert"
+                  redirect_to index_path
+              end
+                flash[:success] = "invitation diverted successfully"
+                redirect_to index_path
               end
             end
           end
