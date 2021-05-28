@@ -86,6 +86,7 @@ class UserWalletController < ApplicationController
       @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email
+      @statement,invite_id = @invite.id
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
       @statement.debitor_balance = @user_wallet.balance
@@ -95,6 +96,7 @@ class UserWalletController < ApplicationController
       @statement.action = "distributing money for proofread"
       @statement.user_id = current_user.id
       @statement.post_id = @post.id
+      @statement,invite_id = @invite.id
       @statement.debit_from = @user.email
       @statement.credit_to = @proofread.email
       @statement.admin_id = @proofread.id
