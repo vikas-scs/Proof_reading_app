@@ -33,19 +33,29 @@ module RailsAdmin
                @post = Post.find(params[:post_id])
                pos  = @post.post.split(" ")
                cor = params[:corrected].split(" ")
-               for i in 0..pos.length-1 
+               if pos.length == cor.length
+                for i in 0..pos.length-1 
                   if pos[i] != cor[i]
                     @error_count += 1
                   end
                 end
-                @invite.error_count = @error_count
-                @invite.invite_status = "accept"
-                @post.status = "corrected"
-                @post.save
-                if @invite.save
-                  flash[:success] = "proof reading done successfully"
-                  redirect_to index_path
-                end
+               end
+               if pos.length < cor.length
+                  count = pos - cor
+                  @error_count = count.length
+              end
+              if pos.length > cor.length
+                count = cos - pos
+                  @error_count = count.length
+              end
+             @invite.error_count = @error_count
+             @invite.invite_status = "accept"
+             @post.status = "corrected"
+             @post.save
+             if @invite.save
+                flash[:success] = "proof reading done successfully"
+                redirect_to index_path
+              end
             end
           end           
         end

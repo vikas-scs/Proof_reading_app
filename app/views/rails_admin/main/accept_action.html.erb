@@ -37,6 +37,7 @@
 
      function showTime() {
        timer.innerHTML = toHHMMSS(time);
+       
        time += 1;
      }
 
@@ -58,14 +59,15 @@
 }
 
 function reset() {
-	alert(time);
   $("#timeTaken").html(time+" seconds");
   clearInterval(interval);
+
   interval = null;
   pause_btn.innerHTML = 'PAUSE';
   document.getElementById("testtime").value = toHHMMSS(time);
   hideBtn([pause_btn, reset_btn]);
   showBtn([start_btn]);
+
 }
 
 function toHHMMSS(time) {
