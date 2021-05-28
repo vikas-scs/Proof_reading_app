@@ -1,4 +1,5 @@
 <% @invites.each do |invite| %>
+  <% if invite.reciever_id == current_admin.id %> 
   <% if invite.invite_status == "accepted" %>
   <% @posts.each do |post| %>
    <% if post.id == invite.post_id %>
@@ -30,5 +31,6 @@
        <% end %>
       <% end %>
        <% end %>
+  <% end %>
   <% end %>
 <% end %>

@@ -25,7 +25,7 @@ module RailsAdmin
             @posts = Post.all
             @cost = Cost.find(1)
             @admin = Admin.find(current_admin.id)
-            @invites = Invite.where(reciever_id: current_admin.id)
+            @invites = Invite.all
            if params[:post_id].present?
               puts params.inspect
               redirect_to reject_action_path
