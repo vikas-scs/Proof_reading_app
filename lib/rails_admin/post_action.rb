@@ -30,7 +30,7 @@ module RailsAdmin
               @arr = Array.new
               @arr.clear
               puts "coming here"
-              @admin = Admin.where(status: "available")
+              @admin = Admin.where(status: "available", role: "proof_reader")
               @add = @admin.ids
               if @admin.length != 0
                 for i in 0..@admin.length - 1

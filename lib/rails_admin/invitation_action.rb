@@ -44,7 +44,7 @@ module RailsAdmin
               elsif @invite.invite_status == "rejected"
                 puts "hello"
                 puts current_admin.id
-                @adm = Admin.where(status: "available", role: "proofreader")
+                @adm = Admin.where(status: "available", role: "proof_reader")
                 @add = @adm.ids
                 if @adm.length != 0
                 for i in 0..@adm.length - 1

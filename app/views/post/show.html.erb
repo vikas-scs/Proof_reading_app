@@ -28,8 +28,9 @@
     <%= hidden_field_tag :"invite_id", @invite.id %>
       <%= submit_tag "accept" %><br>
   <% end %>
-  <%= form_tag(wallet_update_path, :method => "get") do %>
+  <%= form_tag(wallet_update_path(id: @post.id), :method => "get") do %>
        Cupon code:<%= text_field_tag :"cupon_code"%>
+       <%= hidden_field_tag :"invite_id", @invite.id %>
        <%= submit_tag "apply coupon" %>
      <% end %>
   <% elsif @post.status == "done" %>

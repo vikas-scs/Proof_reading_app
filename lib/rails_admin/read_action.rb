@@ -22,6 +22,7 @@ module RailsAdmin
         register_instance_option :controller do
           Proc.new do
             @admins = Admin.all
+            @posts Post.all
             @cost = Cost.find(1)
             @admin = Admin.find(current_admin.id)
             @invites = Invite.where(reciever_id: current_admin.id)
@@ -38,7 +39,7 @@ module RailsAdmin
                @invite.invite_status = "rejected"
                puts "comiiiiiiiiiiiiii"
                @admin.save 
-                @adm = Admin.where(status: "available")
+                @adm = Admin.where(status: "available", role: "proof_reader")
                 puts "trrsssssssss"
                 @add = @adm.ids
                 if !@adm.length == 0
