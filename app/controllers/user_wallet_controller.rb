@@ -83,6 +83,7 @@ class UserWalletController < ApplicationController
       @proofread.wallet = @proof
       @post.status = "done"
       @post.save
+      @proofread.status = "available"
       @statement.debit_from = @user.email
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
@@ -102,7 +103,6 @@ class UserWalletController < ApplicationController
       @user_wallet.save
       @admin.save
       if @proofread.save
-        @invite.destroy
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
       end

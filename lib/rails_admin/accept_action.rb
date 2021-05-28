@@ -18,15 +18,17 @@ module RailsAdmin
         end
         register_instance_option :controller do
           Proc.new do
-            puts params.inspect
+            
             if !params[:corrected].present?
                @post = Post.find(params[:post_id])
                @invite_id = params[:invite_id]
             else
               puts "helloooo"
+              puts params.inspect
                @invite = Invite.find(params[:invite_id])
                @post = Post.find(@invite.post_id)
                @invite.read_status = params[:corrected]
+               @invite.time_taken = params[:time_taken]
                @error_count = 0
                @post = Post.find(params[:post_id])
                pos  = @post.post.split(" ")

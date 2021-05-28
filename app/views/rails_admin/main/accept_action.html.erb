@@ -9,23 +9,24 @@
             	<tr>
   		            <th><b>post</b></th>
   		            <th ><b>correcting code</b></th>
+                  <th ><b>Time taken</b></th> 
   		            <th ><b>Read complete</b></th>
-  		            <th ><b>Time taken</b></th>  
                 </tr>
                 <tr>
                 	<td id = "post"><%= @post.post %></td>
                 	<%= form_tag(accept_action_path, :method => "get") do %>
                 	<%= hidden_field_tag :"invite_id", @invite_id %>
                 	<%= hidden_field_tag :"post_id", @post.id %>
-                      <td><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
+                  <td><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
+                  <input type="" id="testtime"  name="time_taken">
                 	<td><%= submit_tag("send to user") %></td>
                 	<% end %>
-                	<td id = "timeTaken"></td>
                 </tr>
             </table>
     </div>
 </center>
 <script>
+  document.getElementById("testtime").value = "test"
 	const timer = document.querySelector('#time');
     const start_btn = document.querySelector('#start_btn');
     const pause_btn = document.querySelector('#pause_btn');
@@ -62,7 +63,7 @@ function reset() {
   clearInterval(interval);
   interval = null;
   pause_btn.innerHTML = 'PAUSE';
-  timer.innerHTML = toHHMMSS(time);
+  document.getElementById("testtime").value = toHHMMSS(time);
   hideBtn([pause_btn, reset_btn]);
   showBtn([start_btn]);
 }
