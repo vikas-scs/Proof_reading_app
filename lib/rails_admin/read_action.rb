@@ -22,7 +22,7 @@ module RailsAdmin
         register_instance_option :controller do
           Proc.new do
             @admins = Admin.all
-            @posts Post.all
+            @posts = Post.all
             @cost = Cost.find(1)
             @admin = Admin.find(current_admin.id)
             @invites = Invite.where(reciever_id: current_admin.id)
