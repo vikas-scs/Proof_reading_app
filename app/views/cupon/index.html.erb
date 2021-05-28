@@ -1,1 +1,24 @@
-<h1>hello</h1>
+<nav class="navbar navbar-light " style="background-color: #e3f2fd;">
+    <a class="navbar-brand">Proof Reading</a>
+    <% if user_signed_in? %>
+        <form class="form-inline nav-item nav-link mr-sm-2">
+        	<%= link_to " Posts", root_path %>&nbsp
+        	 balance:<%= current_user.user_wallet.balance %> &nbsp
+        	&nbsp<strong><%= current_user.email %></strong>&nbsp
+          &nbsp<%= link_to " Edit profile", edit_user_registration_path %>&nbsp
+          &nbsp<%= link_to " logout", destroy_user_session_path, method: :delete %>
+        </form>
+    <% else %>
+        <form class="form-inline">
+            <a class="nav-item nav-link mr-sm-2" href="/admins/sign_in">Admin Login</a>
+            <a class="nav-item nav-link mr-sm-2" href="/users/sign_in">User Login</a>
+            <a class="nav-item nav-link mr-sm-2" href="/users/sign_up">Register</a>
+        </form>
+    <% end %>
+</nav><br>
+<center>
+	<%= form_tag(cupon_show_path, :method => "get") do %>
+       Cupon code:<%= text_field_tag :"cupon_code"%>
+       <%= submit_tag "apply" %>
+     <% end %>
+</center>

@@ -22,6 +22,7 @@ module RailsAdmin
         register_instance_option :controller do
           Proc.new do
             @invites = Invite.all
+            @posts =Post.all
            if params[:invite_id].present?
               puts "helloooooooooo"
               @invite = Invite.find(params[:invite_id].to_i)
@@ -43,9 +44,9 @@ module RailsAdmin
               elsif @invite.invite_status == "rejected"
                 puts "hello"
                 puts current_admin.id
-                @adm = Admin.where(status: "available")
+                @adm = Admin.where(status: "available", role: "proofreader")
                 @add = @adm.ids
-                if @adm.length >= 1
+                if @adm.length != 0
                 for i in 0..@adm.length - 1
                   if @add[i] == current_admin.id
                     next
@@ -63,9 +64,6 @@ module RailsAdmin
                     @invit.save
                   end
                 end
-              else
-                flash[:error] = "all proofreaders are busy can't divert"
-                  redirect_to index_path
               end
                 flash[:success] = "invitation diverted successfully"
                 redirect_to index_path

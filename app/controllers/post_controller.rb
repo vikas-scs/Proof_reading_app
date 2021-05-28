@@ -8,6 +8,7 @@ class PostController < ApplicationController
     @post = Post.new 
   end
   def show
+    @cupons = Cupon.all
     @post = Post.find(params[:id])
     puts @post.post
     if Invite.exists?(post_id: params[:id], invite_status: "accept") 

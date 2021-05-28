@@ -2,7 +2,7 @@
     <a class="navbar-brand">Proof Reading</a>
     <% if user_signed_in? %>
         <form class="form-inline nav-item nav-link mr-sm-2">
-        	<%= link_to "Add money", wallets_path(id: current_user.id) %> &nbsp
+        	<%= link_to " Posts", root_path %>&nbsp
         	 balance:<%= current_user.user_wallet.balance %> &nbsp
         	&nbsp<strong><%= current_user.email %></strong>&nbsp
           &nbsp<%= link_to " Edit profile", edit_user_registration_path %>&nbsp
@@ -18,13 +18,20 @@
 </nav><br>
 <center>
 <% if @post.status == "corrected" %>
+  <p>Coupons:</p>
+  <% @cupons.each do |cupon| %>
+   <%= cupon.coupon_name %>
+   <% end %>
   <h1> proof reading done </h1>
   corrected post:<p><%= @invite.read_status %>
   <%= form_tag(wallet_update_path(id: @post.id), :method => "patch") do %>
     <%= hidden_field_tag :"invite_id", @invite.id %>
-      <%= submit_tag "accept" %>
-      <%= link_to "apply coupon?", cupons_path(id: 1) %>
+      <%= submit_tag "accept" %><br>
   <% end %>
+  <%= form_tag(wallet_update_path, :method => "get") do %>
+       Cupon code:<%= text_field_tag :"cupon_code"%>
+       <%= submit_tag "apply coupon" %>
+     <% end %>
   <% elsif @post.status == "done" %>
       <%= @post.post %><br>
       <h1> proof reading already done </h1>

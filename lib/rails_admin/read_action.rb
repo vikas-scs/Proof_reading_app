@@ -54,9 +54,6 @@ module RailsAdmin
                        @invit.save
                   end
                  end
-               else
-                  flash[:error] = "all proofreaders are busy can't divert"
-                  redirect_to index_path
                 end
                 if @invite.save
                   flash[:error] = "You got fine invitation diverted successfully"
