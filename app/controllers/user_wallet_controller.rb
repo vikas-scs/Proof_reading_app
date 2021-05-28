@@ -38,25 +38,67 @@ class UserWalletController < ApplicationController
     end
   end
   def update
-      @post = Post.find(params[:id])
+      @statement = Statement.new
+      @post = Post.find(params[:id].to_i)
       @user = User.find(@post.user_id)
       @cost = Cost.find(1)
+      @statement.statement_type = "credit"
+      @statement.action = "distributing money for proofread"
+      @statement.user_id = current_user.id
+      @statement.post_id = @post.id
+      puts current_user.id
       @user_wallet = UserWallet.find(current_user.id)
       @invite = Invite.find(params[:invite_id])
       @admin = Admin.find(@invite.host_id)
+      @statement.admin_id = @admin.id
       @proofread = Admin.find(@invite.reciever_id)
       @total = @cost.word_cost * @invite.error_count
-      @cutoff = @user_wallet.lock_balance - @total
-      @user_wallet.lock_balance = @cutoff
-      @percentage = @total % @cost.admin_commission
-      puts @percentage
+      if params[:cupon_code].present?
+        if Cupon.exists?(:coupon_name => params[:cupon_code])
+          @copon = Cupon.where(coupon_name: params[:cupon_code])
+          puts @copon
+          @coupons = @copon.ids
+          @cupon = Cupon.find(@coupons[0])
+           @offer = (@total * @cupon.percentage) / 100
+           @post.cupon_id = @coupons[0]
+           @cutoff = @user_wallet.lock_balance - @offer
+           @user_wallet.lock_balance = 0
+           @percentage = (@offer * @cost.admin_commission) / 100
+           @pf = @offer - @percentage
+           @cupon.usage_count += 1
+           @cupon.save
+        end
+      else
+         @cutoff = @user_wallet.lock_balance - @total
+         @user_wallet.lock_balance = 0
+         @percentage = (@total * @cost.admin_commission) / 100
+         puts @percentage
+         @pf = @total - @percentage
+      end
       @admin_wallet = @admin.wallet + @percentage
       @admin.wallet = @admin_wallet
-      @pf = @total - @percentage
+      @admin_refund = @user_wallet.balance + @cutoff
+      @user_wallet.balance = @admin_refund
       @proof = @pf + @proofread.wallet
       @proofread.wallet = @proof
       @post.status = "done"
       @post.save
+      @statement.debit_from = @user.email
+      @statement.credit_to = @admin.email
+      @statement.amount = @percentage
+      @statement.debitor_balance = @user_wallet.balance
+      @statement.save
+      @statement = Statement.new
+      @statement.statement_type = "credit"
+      @statement.action = "distributing money for proofread"
+      @statement.user_id = current_user.id
+      @statement.post_id = @post.id
+      @statement.debit_from = @user.email
+      @statement.credit_to = @proofread.email
+      @statement.admin_id = @proofread.id
+      @statement.amount = @pf
+      @statement.debitor_balance = @user_wallet.balance
+      @statement.save
       @user_wallet.save
       @admin.save
       if @proofread.save

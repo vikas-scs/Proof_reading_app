@@ -24,11 +24,11 @@
    <% end %>
   <h1> proof reading done </h1>
   corrected post:<p><%= @invite.read_status %>
-  <%= form_tag(wallet_update_path(id: @post.id), :method => "patch") do %>
+  <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
     <%= hidden_field_tag :"invite_id", @invite.id %>
       <%= submit_tag "accept" %><br>
   <% end %>
-  <%= form_tag(wallet_update_path(id: @post.id), :method => "get") do %>
+  <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code"%>
        <%= hidden_field_tag :"invite_id", @invite.id %>
        <%= submit_tag "apply coupon" %>

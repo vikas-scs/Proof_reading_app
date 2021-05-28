@@ -28,17 +28,29 @@ module RailsAdmin
             @invites = Invite.all
            if params[:post_id].present?
               puts params.inspect
-              redirect_to reject_action_path
+              redirect_to accept_action_path
           end
           if params[:is_status].present?
             if @cost.fine_amount < @admin.wallet
+              @statement = Statement.new
+              @statement.statement_type = "debit"
+              @statement.action = "fined by rejecting invitation"
               @invite = Invite.find(params[:invite_id].to_i)
+              @super = Admin.find(@invite.host_id)
                fine = @admin.wallet - @cost.fine_amount
                @admin.wallet = fine
+               @super_add = @super.wallet + @cost.fine_amount
+               @super.wallet = @super_add
+               @statement.debit_from = @admin.email
+               @statement.credit_to = @super.email
+               @super.save 
+               @statement.amount = @cost.fine_amount
                @admin.status = "available"
                @invite.invite_status = "rejected"
                puts "comiiiiiiiiiiiiii"
                @admin.save 
+               @statement.debitor_balance = @admin.wallet
+               @statement.save
                 @adm = Admin.where(status: "available", role: "proof_reader")
                 puts "trrsssssssss"
                 @add = @adm.ids
