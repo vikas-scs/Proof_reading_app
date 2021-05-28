@@ -18,25 +18,25 @@
 </nav><br>
 <center>
 <% if @post.status == "corrected" %>
-  <p>Coupons:</p>
-  <% @cupons.each do |cupon| %>
-   <%= cupon.coupon_name %>
+   <p>Coupons:</p>
+   <% @cupons.each do |cupon| %>
+     <%= cupon.coupon_name %>
    <% end %>
-  <h1> proof reading done </h1>
-  corrected post:<p><%= @invite.read_status %>
-  <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
-    <%= hidden_field_tag :"invite_id", @invite.id %>
+   <h1> proof reading done </h1>
+   corrected post:<p><%= @invite.read_status %>
+   <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
+     <%= hidden_field_tag :"invite_id", @invite.id %>
       <%= submit_tag "accept" %><br>
-  <% end %>
-  <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
+   <% end %>
+   <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code"%>
        <%= hidden_field_tag :"invite_id", @invite.id %>
        <%= submit_tag "apply coupon" %>
-     <% end %>
-  <% elsif @post.status == "done" %>
+  <% end %> 
+<% elsif @post.status == "done" %>
       <%= @post.post %><br>
       <h1> proof reading already done </h1>
-<% else %>
-<h1> proof reading is not yet done </h1>
+ <% else %>
+    <h1> proof reading is not yet done </h1>
 <% end %>
 </center>

@@ -11,20 +11,17 @@ class PostController < ApplicationController
     @cupons = Cupon.all
     @post = Post.find(params[:id])
     puts @post.post
-    if Invite.exists?(post_id: params[:id], invite_status: "accept") 
-         puts "hellooooooooo"                        #checking whether post is exist in invitations
+    if Invite.exists?(post_id: params[:id], invite_status: "accept")                        #checking whether post is exist in invitations
       @invi = Invite.where(post_id: params[:id], invite_status: "accept")
       @idd = @invi.ids
          @invite = Invite.find(@idd[0])                             #getting invitation id from post status
-      puts @invite.id
+      puts @invite.invite_status
        if @invite.error_count >= 0
          @post.post = @invite.read_status
          @post.status = "corrected"                                #assigning status  for  post if proofreading is done  
          @post.save
       end
-    else
-
-    end
+     end
   end
   def edit
      @post = Post.find(params[:id])

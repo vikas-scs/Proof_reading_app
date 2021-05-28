@@ -18,7 +18,7 @@
                 	<%= hidden_field_tag :"invite_id", @invite_id %>
                 	<%= hidden_field_tag :"post_id", @post.id %>
                   <td><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
-                  <input type="" id="testtime"  name="time_taken">
+                  <td><input type="" id="testtime"  name="time_taken"></td>
                 	<td><%= submit_tag("send to user") %></td>
                 	<% end %>
                 </tr>
@@ -26,7 +26,7 @@
     </div>
 </center>
 <script>
-  document.getElementById("testtime").value = "test"
+  
 	const timer = document.querySelector('#time');
     const start_btn = document.querySelector('#start_btn');
     const pause_btn = document.querySelector('#pause_btn');

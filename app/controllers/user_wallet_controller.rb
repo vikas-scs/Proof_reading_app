@@ -75,14 +75,15 @@ class UserWalletController < ApplicationController
          puts @percentage
          @pf = @total - @percentage
       end
+      @post.status = "done"
+      @post.save
       @admin_wallet = @admin.wallet + @percentage
       @admin.wallet = @admin_wallet
       @admin_refund = @user_wallet.balance + @cutoff
       @user_wallet.balance = @admin_refund
       @proof = @pf + @proofread.wallet
       @proofread.wallet = @proof
-      @post.status = "done"
-      @post.save
+      @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email
       @statement.credit_to = @admin.email
@@ -102,6 +103,7 @@ class UserWalletController < ApplicationController
       @statement.save
       @user_wallet.save
       @admin.save
+      @invite.save
       if @proofread.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
