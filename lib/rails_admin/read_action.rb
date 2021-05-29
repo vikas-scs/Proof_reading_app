@@ -35,6 +35,7 @@ module RailsAdmin
               @statement = Statement.new
               @statement.statement_type = "debit"
               @statement.action = "fined by rejecting invitation"
+               @statement.ref_id = rand(7 ** 7)
               @invite = Invite.find(params[:invite_id].to_i)
               @super = Admin.find(@invite.host_id)
                fine = @admin.wallet - @cost.fine_amount

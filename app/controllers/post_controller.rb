@@ -10,12 +10,25 @@ class PostController < ApplicationController
   def show
     @cupons = Cupon.all
     @post = Post.find(params[:id])
+    if @post.status == "done"
+       @cupon = Cupon.find(@post.cupon_id)
+  
+    @state = Statement.where(post_id: @post.id)
+    @statement = @state.ids
+    puts @statement
+    @statement1 = Statement.find(@statement[0])
+    @statement2 = Statement.find(@statement[1])
+  end
+    @invites = Invite.where(post_id: @post.id)
+    @invit = @invites.ids
+    @invite = Invite.find(@invit[0])
+    @admin = Admin.find(@invite.reciever_id)
     puts @post.post
     if Invite.exists?(post_id: params[:id], invite_status: "accept")                        #checking whether post is exist in invitations
       @invi = Invite.where(post_id: params[:id], invite_status: "accept")
       @idd = @invi.ids
          @invite = Invite.find(@idd[0])                             #getting invitation id from post status
-      puts @invite.invite_status
+        puts @invite.invite_status
        if @invite.error_count >= 0
          @post.post = @invite.read_status
          @post.status = "corrected"                                #assigning status  for  post if proofreading is done  
@@ -40,7 +53,8 @@ class PostController < ApplicationController
     @money = @user_wallet.balance - @cost.word_cost * str.length        
     @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
     @user_wallet.lock_balance = @cost.word_cost * str.length                    #locking the balance of getting from word count
-    @user_wallet.save                               
+    @user_wallet.save 
+    @post.ref_id = params[:ref_id]                              
     @post.post = params["post"]
     @post.user_id = current_user.id
     @post.status = "pending"

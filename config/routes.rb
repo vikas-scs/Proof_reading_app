@@ -16,7 +16,9 @@ Rails.application.routes.draw do
   post 'user_wallet/:id', to: 'user_wallet#create'
   get 'user_wallet/:id', to: 'user_wallet#show', as: :coupon
   get 'user_wallet/:id/edit', to: 'user_wallet#edit', as: :edit_wallet
-  patch 'user_wallet/:id', to: 'user_wallet#update', as: :wallet_update
+  patch 'user_wallet/id', to: 'user_wallet#update', as: :coupon_update
   put 'user_wallet/:id', to: 'user_wallet#update'
    get 'cupon/index', to: 'cupon#index', as: :cupons
+   get 'cupon/:id', to: 'cupon#show', as: :cupon_show
+   get 'cupon/:id/edit', to: 'cupon#hello', as: :coupon1
 end

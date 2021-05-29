@@ -22,12 +22,18 @@
   	<table class= "myTable" style="width: 50%">
     <tr>
       <th>Post id</th>
-      <th>post view</th>
+      <th>Post view</th>
+      <th>Download Invoice</th>
   </tr>
   <% @posts.each do |post| %>
   <tr>
       <td><%= post.id %></td>
        <td><%= link_to "view", post %></td>
+       <% if post.status == "done" %>
+       <td><%= link_to "download", coupon1_path(format: :pdf, id: post.id) %></td>
+       <% else %>
+       <td></td>
+       <% end %>
    </tr>
    <% end %>
    </table> 

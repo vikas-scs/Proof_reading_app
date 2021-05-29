@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PDF</title>
+  <%= wicked_pdf_stylesheet_link_tag "application" -%>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+</head>
+<body>
+  <div class='container'>
+    <%= yield %>
+  </div>
+</body>
+</html>

@@ -3,6 +3,7 @@
   <div>
     <%= form.label :Post %><br>
     <%= form.text_field :post,:size=>"100", placeholder: "Make an offer ", :maxlength=>"254" %>
+    <%= form.hidden_field :ref_id, value: rand(6 ** 6) %>
   </div><br>
   <div class="actions">
     <%= form.submit "send" %>

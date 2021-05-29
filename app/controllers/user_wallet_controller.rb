@@ -46,6 +46,7 @@ class UserWalletController < ApplicationController
       @statement.action = "distributing money for proofread"
       @statement.user_id = current_user.id
       @statement.post_id = @post.id
+      @statement.ref_id = rand(7 ** 7)
       puts current_user.id
       @user_wallet = UserWallet.find(current_user.id)
       @invite = Invite.find(params[:invite_id])
@@ -65,7 +66,7 @@ class UserWalletController < ApplicationController
            @user_wallet.lock_balance = 0
            @percentage = (@offer * @cost.admin_commission) / 100
            @pf = @offer - @percentage
-           @cupon.usage_count += 1
+           @cupon.usage_count = @cupon.usage_count + 1
            @cupon.save
         end
       else
@@ -86,7 +87,7 @@ class UserWalletController < ApplicationController
       @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email
-      @statement,invite_id = @invite.id
+      @statement.invite_id = @invite.id
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
       @statement.debitor_balance = @user_wallet.balance
@@ -96,7 +97,8 @@ class UserWalletController < ApplicationController
       @statement.action = "distributing money for proofread"
       @statement.user_id = current_user.id
       @statement.post_id = @post.id
-      @statement,invite_id = @invite.id
+       @statement.ref_id = rand(7 ** 7)
+      @statement.invite_id = @invite.id
       @statement.debit_from = @user.email
       @statement.credit_to = @proofread.email
       @statement.admin_id = @proofread.id
