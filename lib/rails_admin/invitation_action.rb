@@ -26,22 +26,25 @@ module RailsAdmin
            if params[:invite_id].present?
               puts "helloooooooooo"
               @invite = Invite.find(params[:invite_id].to_i)
-              @invite.invite_status = params[:is_status]
-              @invite.save
+              
               @admin = Admin.find(current_admin.id)
               
               if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :invite_status => "accepted")
-                @invite.invite_status = "cancelled"
+                @invite.invite_status = ""
                 @invite.save
                 puts "rihftttttttt"
                 flash[:error] = "invitation accepted by another proofreader"
                 redirect_to index_path
-              elsif @invite.invite_status == "accepted"
-                 @admin.status = "available"
+              else
+                @invite.invite_status = params[:is_status]
+                @invite.save
+                if @invite.invite_status == "accepted"
+                @admin.status = "available"
                  if @admin.save
                   flash[:success] = "request accepted successfully"
                   redirect_to index_path
                  end
+                end
               end
               if @invite.invite_status == "rejected"
                 puts "hello"

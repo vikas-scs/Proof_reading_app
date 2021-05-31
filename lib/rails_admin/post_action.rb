@@ -30,23 +30,17 @@ module RailsAdmin
               @arr = Array.new
               @arr.clear
               puts "coming here"
+              if Invite.exists?(:post_id => @post.id, :invite_status => "accepted")
+                 flash[:error] = "this post is already accepted by other"
+                  redirect_to index_path
+              end
               @admin = Admin.where(status: "available", role: "proof_reader")
               @add = @admin.ids
+              puts @add
               if @admin.length != 0
-                i = 0   
-                while true 
-                  if i < @admin.length - 1
-                   break
-                  end
-                  if @add[i] == current_admin.id
-                    next 
-                  elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "rejected")
-                      puts "hello"
-                      next
-                  elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "accepted")
-                      puts "hello tix"
-                      break
-                  elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "cancelled")
+                for i in 0..@admin.length - 1
+                  if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "reject")
+                      puts "hellooooooooooo"
                       next
                   else
                       puts "its comming here"
@@ -60,16 +54,12 @@ module RailsAdmin
                       @invit.save
                       @admin = Admin.find(@add[i])
                       @arr << @admin.email
-                    end     
-                  i += 1   
+                    end      
                 end 
                 if @arr.empty?
-                  flash[:error] = "this post is already accepted by other"
+                  flash[:error] = "all proofreaders are busy can't send"
                   redirect_to index_path
                 end
-              else
-                flash[:error] = "all proofreaders are busy can't send"
-                redirect_to index_path
               end
               if !@arr.empty?
                  flash[:success] = "invitation sent successfully to #{@arr}"
