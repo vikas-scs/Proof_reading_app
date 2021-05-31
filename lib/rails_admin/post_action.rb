@@ -31,13 +31,14 @@ module RailsAdmin
               @arr.clear
               puts "coming here"
               if Invite.exists?(:post_id => @post.id, :invite_status => "accepted")
+                puts "yessssssssss"
                  flash[:error] = "this post is already accepted by other"
-                  redirect_to index_path
-              end
-              @admin = Admin.where(status: "available", role: "proof_reader")
-              @add = @admin.ids
-              puts @add
-              if @admin.length != 0
+                 redirect_to index_path
+              else
+               @admin = Admin.where(status: "available", role: "proof_reader")
+               @add = @admin.ids
+               puts @add
+               if @admin.length != 0
                 for i in 0..@admin.length - 1
                   if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "reject")
                       puts "hellooooooooooo"
@@ -56,15 +57,12 @@ module RailsAdmin
                       @arr << @admin.email
                     end      
                 end 
-                if @arr.empty?
-                  flash[:error] = "all proofreaders are busy can't send"
-                  redirect_to index_path
+                if !@arr.empty?
+                 flash[:success] = "invitation sent successfully to #{@arr}"
+                 redirect_to index_path
                 end
               end
-              if !@arr.empty?
-                 flash[:success] = "invitation sent successfully to #{@arr}"
-                redirect_to index_path
-              end
+             end
             else
               flash[:error] = "post proofreading is completed"
               redirect_to index_path
