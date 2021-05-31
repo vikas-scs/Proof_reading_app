@@ -33,19 +33,22 @@ module RailsAdmin
               @admin = Admin.where(status: "available", role: "proof_reader")
               @add = @admin.ids
               if @admin.length != 0
-                for i in 0..@admin.length - 1
-                    if @add[i] == current_admin.id
-                      next
-                    elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "rejected")
+                i = 0   
+                while true 
+                  if i < @admin.length - 1
+                   break
+                  end
+                  if @add[i] == current_admin.id
+                    next 
+                  elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "rejected")
                       puts "hello"
-                       next
-                    elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "pending")
-                        next
-                         elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "accepted")
-                        next
-                      elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "cancelled")
-                        next
-                    else
+                      next
+                  elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "accepted")
+                      puts "hello tix"
+                      break
+                  elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "cancelled")
+                      next
+                  else
                       puts "its comming here"
                       @invit = Invite.new
                       @invit.post_id = @id
@@ -57,8 +60,9 @@ module RailsAdmin
                       @invit.save
                       @admin = Admin.find(@add[i])
                       @arr << @admin.email
-                    end
-                end
+                    end     
+                  i += 1   
+                end 
                 if @arr.empty?
                   flash[:error] = "all proofreaders are busy can't send"
                   redirect_to index_path
