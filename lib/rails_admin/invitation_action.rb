@@ -26,7 +26,7 @@ module RailsAdmin
            if params[:invite_id].present?
               puts "helloooooooooo"
               @invite = Invite.find(params[:invite_id].to_i)
-              if Invite.exists?(:host_id => params[:host_id].to_i,:post_id => params[:post_id].to_i, :invite_status => "accepted")
+              if Invite.exists?(:host_id => params[:host_id],:post_id => params[:post_id], :invite_status => "accepted")
                 @invite.invite_status = "rejected"
                 @invite.save
                 puts "rihftttttttt"
