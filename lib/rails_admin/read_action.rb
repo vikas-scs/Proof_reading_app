@@ -45,12 +45,20 @@ module RailsAdmin
                @statement.ref_id = rand(7 ** 7)
                @super = Admin.find(@invite.host_id)
                @wall = @admin.wallet - @fine
-               @admin.wallet = @wall
+                  @admin = Admin.first
+                  @admin.with_lock do
+                  @admin.wallet = @wall
+                  @admin.save!
+                  end
                @super_add = @super.wallet + @fine
-               @super.wallet = @super_add
+                  @super = Admin.first
+                  @super.with_lock do
+                  @super.wallet = @super_add
+                  @super.save!
+                  end
                @statement.debit_from = @admin.email
                @statement.credit_to = @super.email
-               @super.save 
+               
                @statement.amount = @fine
                @admin.status = "available"
                @invite.invite_status = "rejected"

@@ -83,11 +83,25 @@ class UserWalletController < ApplicationController
       @post.status = "done"
       @post.save
       @admin_wallet = @admin.wallet + @percentage
-      @admin.wallet = @admin_wallet
+        @admin = Admin.first
+        @admin.with_lock do
+          @admin.wallet = @admin_wallet
+          @admin.save!
+       end
+    
       @admin_refund = @user_wallet.balance + @cutoff
-      @user_wallet.balance = @admin_refund
+
+       @user_wallet = UserWallet.first
+       @user_wallet.with_lock do
+         @user_wallet.balance = @admin_refund
+         @user_wallet.save!
+       end
       @proof = @pf + @proofread.wallet
-      @proofread.wallet = @proof
+       @proofread = Admin.first
+       @proofread.with_lock do
+         @proofread.wallet = @proof
+         @proofread.save!
+       end
       @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email
@@ -109,10 +123,7 @@ class UserWalletController < ApplicationController
       @statement.amount = @pf
       @statement.debitor_balance = @user_wallet.balance
       @statement.save
-      @user_wallet.save
-      @admin.save
-      @invite.save
-      if @proofread.save
+      if @invite.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
       end
