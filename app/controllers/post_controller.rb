@@ -18,12 +18,13 @@ class PostController < ApplicationController
     puts @statement
     @statement1 = Statement.find(@statement[0])
     @statement2 = Statement.find(@statement[1])
-  end
+  
     @invites = Invite.where(post_id: @post.id)
     @invit = @invites.ids
     @invite = Invite.find(@invit[0])
     @admin = Admin.find(@invite.reciever_id)
     puts @post.post
+  end
     if Invite.exists?(post_id: params[:id], invite_status: "accept")                        #checking whether post is exist in invitations
       @invi = Invite.where(post_id: params[:id], invite_status: "accept")
       @idd = @invi.ids

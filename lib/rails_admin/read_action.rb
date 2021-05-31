@@ -31,16 +31,20 @@ module RailsAdmin
               redirect_to accept_action_path
           end
           if params[:is_status].present?
-            if @cost.fine_amount < @admin.wallet
+            @invite = Invite.find(params[:invite_id].to_i)
+            @post = Post.find(@invite.post_id)
+            @user = User.find(@post.user_id)
+            @user_wallet = UserWallet.find(@user.user_wallet.id)
+            @fine = (@user_wallet.lock_balance * @cost.fine_amount) / 100
+            if @fine < @admin.wallet
               @statement = Statement.new
               @statement.statement_type = "debit"
               @statement.action = "fined by rejecting invitation"
                @statement.ref_id = rand(7 ** 7)
-              @invite = Invite.find(params[:invite_id].to_i)
               @super = Admin.find(@invite.host_id)
-               fine = @admin.wallet - @cost.fine_amount
+               fine = @admin.wallet - @fine
                @admin.wallet = fine
-               @super_add = @super.wallet + @cost.fine_amount
+               @super_add = @super.wallet + @fine
                @super.wallet = @super_add
                @statement.debit_from = @admin.email
                @statement.credit_to = @super.email
