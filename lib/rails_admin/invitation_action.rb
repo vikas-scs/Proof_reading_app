@@ -30,7 +30,7 @@ module RailsAdmin
               @admin = Admin.find(current_admin.id)
               
               if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :invite_status => "accepted")
-                @invite.invite_status = ""
+                @invite.invite_status = "reject"
                 @invite.save
                 puts "rihftttttttt"
                 flash[:error] = "invitation accepted by another proofreader"
