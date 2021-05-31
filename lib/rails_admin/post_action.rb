@@ -64,7 +64,7 @@ module RailsAdmin
                   i += 1   
                 end 
                 if @arr.empty?
-                  flash[:error] = "all proofreaders are busy can't send"
+                  flash[:error] = "this post is already accepted by other"
                   redirect_to index_path
                 end
               else
