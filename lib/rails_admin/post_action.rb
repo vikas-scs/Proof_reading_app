@@ -30,14 +30,6 @@ module RailsAdmin
               @arr = Array.new
               @arr.clear
               puts "coming here"
-              @admin1 =  Admin.where(status: "busy", role: "proof_reader")
-              @add1 = @admin1.ids
-              @a = 0
-              for i in 0..@admin1.length - 1
-                if Invite.exists?(:post_id => params[:id],:reciever_id => @add1[i], :invite_status => "accepted")
-                  @a += 1
-                end
-              end
               @admin = Admin.where(status: "available", role: "proof_reader")
               @add = @admin.ids
               if @admin.length != 0
@@ -48,7 +40,10 @@ module RailsAdmin
                       puts "hello"
                        next
                     elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "pending")
-                      puts "here aree"
+                        next
+                         elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "accepted")
+                        next
+                      elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "cancelled")
                         next
                     else
                       puts "its comming here"
@@ -68,12 +63,12 @@ module RailsAdmin
                   flash[:error] = "all proofreaders are busy can't send"
                   redirect_to index_path
                 end
-              end
-              if @a != 0
-                 flash[:error] = "invitation acceptedby another proofreader"
+              else
+                flash[:error] = "all proofreaders are busy can't send"
                 redirect_to index_path
-              elsif !@arr.empty?
-                flash[:success] = "invitation sent successfully to #{@arr}"
+              end
+              if !@arr.empty?
+                 flash[:success] = "invitation sent successfully to #{@arr}"
                 redirect_to index_path
               end
             else
