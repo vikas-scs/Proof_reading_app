@@ -44,17 +44,17 @@ RailsAdmin.config do |config|
     end 
     invitation_action do
     visible do
-        bindings[:abstract_model].model.to_s == "Admin"
+        bindings[:abstract_model].model.to_s == "Post"
       end
     end 
     read_action do
     visible do
-        bindings[:abstract_model].model.to_s == "Admin"
+        bindings[:abstract_model].model.to_s == "Post"
       end
     end
     invite_action do
     visible do
-        bindings[:abstract_model].model.to_s == "Admin"
+        bindings[:abstract_model].model.to_s == "Post"
       end
     end 
     accept_action do

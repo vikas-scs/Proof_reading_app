@@ -33,14 +33,7 @@ module RailsAdmin
                @post = Post.find(params[:post_id])
                pos  = @post.post.split(" ")
                cor = params[:corrected].split(" ")
-               if pos.length == cor.length
-                for i in 0..pos.length-1 
-                  if pos[i] != cor[i]
-                    @error_count += 1
-                  end
-                end
-               end
-               if pos.length < cor.length
+               if pos.length < cor.length || pos.length == cor.length
                   count = pos - cor
                   @error_count = count.length
               end
