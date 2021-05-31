@@ -45,17 +45,21 @@ module RailsAdmin
                @statement.ref_id = rand(7 ** 7)
                @super = Admin.find(@invite.host_id)
                @wall = @admin.wallet - @fine
+               Admin.transaction do
                   @admin = Admin.first
                   @admin.with_lock do
                   @admin.wallet = @wall
                   @admin.save!
                   end
+               end
                @super_add = @super.wallet + @fine
+               Admin.transaction do
                   @super = Admin.first
                   @super.with_lock do
                   @super.wallet = @super_add
                   @super.save!
                   end
+               end 
                @statement.debit_from = @admin.email
                @statement.credit_to = @super.email
                

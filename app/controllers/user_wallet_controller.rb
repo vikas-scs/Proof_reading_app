@@ -83,25 +83,29 @@ class UserWalletController < ApplicationController
       @post.status = "done"
       @post.save
       @admin_wallet = @admin.wallet + @percentage
+      Admin.transaction do
         @admin = Admin.first
         @admin.with_lock do
           @admin.wallet = @admin_wallet
           @admin.save!
        end
-    
+      end
       @admin_refund = @user_wallet.balance + @cutoff
-
+      UserWallet.transaction do
        @user_wallet = UserWallet.first
        @user_wallet.with_lock do
          @user_wallet.balance = @admin_refund
          @user_wallet.save!
        end
+      end
       @proof = @pf + @proofread.wallet
+      Admin.transaction do
        @proofread = Admin.first
        @proofread.with_lock do
          @proofread.wallet = @proof
          @proofread.save!
        end
+      end
       @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email

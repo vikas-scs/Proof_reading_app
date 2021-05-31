@@ -61,10 +61,15 @@ class PostController < ApplicationController
       redirect_to new_wallet_path(id: current_user.id)
       return
     end
-    @money = @user_wallet.balance - @cost.word_cost * str.length        
-    @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
-    @user_wallet.lock_balance = @cost.word_cost * str.length                    #locking the balance of getting from word count
-    @user_wallet.save 
+    @money = @user_wallet.balance - @cost.word_cost * str.length
+    UserWallet.transaction do
+        @user_wallet = UserWallet.first
+        @user_wallet.with_lock do
+          @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
+          @user_wallet.lock_balance = @cost.word_cost * str.length                    #locking the balance of getting from word count
+          @user_wallet.save! 
+       end
+      end         
     @post.ref_id = params[:ref_id]                              
     @post.post = params["post"]
     @post.user_id = current_user.id
