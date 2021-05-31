@@ -59,7 +59,8 @@
 }
 
 function reset() {
-  $("#timeTaken").html(time+" seconds");
+  time = time - 1
+  $("#timeTaken").html(time+ " seconds");
   clearInterval(interval);
 
   interval = null;

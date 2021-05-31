@@ -35,6 +35,8 @@ module RailsAdmin
             @post = Post.find(@invite.post_id)
             @user = User.find(@post.user_id)
             @user_wallet = UserWallet.find(@user.user_wallet.id)
+            puts @user_wallet.lock_balance
+            puts @cost.fine_amount
             @fine = (@user_wallet.lock_balance * @cost.fine_amount) / 100
             if @fine < @admin.wallet
               @statement = Statement.new
@@ -42,14 +44,14 @@ module RailsAdmin
               @statement.action = "fined by rejecting invitation"
                @statement.ref_id = rand(7 ** 7)
                @super = Admin.find(@invite.host_id)
-               fine = @admin.wallet - @fine
-               @admin.wallet = fine
+               @wall = @admin.wallet - @fine
+               @admin.wallet = @wall
                @super_add = @super.wallet + @fine
                @super.wallet = @super_add
                @statement.debit_from = @admin.email
                @statement.credit_to = @super.email
                @super.save 
-               @statement.amount = @cost.fine_amount
+               @statement.amount = @fine
                @admin.status = "available"
                @invite.invite_status = "rejected"
                puts "comiiiiiiiiiiiiii"
