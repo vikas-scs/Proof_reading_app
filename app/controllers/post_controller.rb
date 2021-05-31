@@ -35,6 +35,16 @@ class PostController < ApplicationController
          @post.save
       end
      end
+     respond_to do |format|
+      format.html
+      format.pdf do
+        render template: "project/edit.html.erb",            #rendering pdf file through view
+        layout: 'pdf.html.erb',
+        pdf: "#{@project.name}",
+        disposition: 'attachment'                            #providing  downloading option
+        return
+      end
+    end
   end
   def edit
      @post = Post.find(params[:id])

@@ -61,6 +61,10 @@ class UserWalletController < ApplicationController
           @coupons = @copon.ids
           @cupon = Cupon.find(@coupons[0])
            @offer = (@total * @cupon.percentage) / 100
+           if @offer > @cupon.amount
+            @offer = @cupon.amount
+           end
+           @post.coupon_benifit = @offer
            @post.cupon_id = @coupons[0]
            @cutoff = @user_wallet.lock_balance - @offer
            @user_wallet.lock_balance = 0

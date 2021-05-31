@@ -14,10 +14,10 @@
         <h5>
       <span style="float:left; padding-left: 25%;">invoice for:</span>
     </h5><br>
-      <span style="float:left; padding-left:  30%;">proofreading</span>
-      <span style="float:right; padding-right: 50%;">invoice_id:<%= @post.ref_id %></span>
+      <span style="float:left; padding-left:  30%;">proofreading</span><br>
+      <span style="float:left; padding-left: 30%;">invoice_id:<%= @post.ref_id %></span><br>
       <span style="float:left; padding-left:  30%;"><%= @admin.email %></span><br>
-       <span id="date" style="float:right; padding-right: 50%;">date:</span>
+       <span id="date" style="float:left; padding-left: 30%;">date:</span><br>
       <span style="float:left; padding-left:  30%;">proof_reading_app</span><br>
       </h6><br><br>
 
@@ -36,9 +36,7 @@
        <td><%= current_user.email %></td>
        <td><%= @post.id %></td>
        <td><%= @cupon.coupon_name rescue 0 %></td>
-       <% @total = ((@statement1.amount + @statement2.amount) * 100) / @cupon.percentage %>
-       <%= @total %>
-       <td><%= @total - (@statement1.amount + @statement2.amount) rescue 0 %></td>
+       <td><%= @post.coupon_benifit %></td>
        <td><%= @statement1.amount + @statement2.amount %>
       </tr>
    </table> 
