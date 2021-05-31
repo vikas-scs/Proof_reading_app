@@ -36,7 +36,8 @@ module RailsAdmin
                 for i in 0..@admin.length - 1
                     if @add[i] == current_admin.id
                       next
-                    elsif Invite.exists?(:post_id => params[:post_id].to_i,:reciever_id => @add[i])
+                    elsif Invite.exists?(:post_id => params[:id],:reciever_id => @add[i], :invite_status => "rejected")
+                      puts "hello"
                        next
                     else
                       puts "its comming here"
@@ -51,6 +52,10 @@ module RailsAdmin
                       @admin = Admin.find(@add[i])
                       @arr << @admin.email
                     end
+                end
+                if @arr.empty?
+                  flash[:error] = "all proofreaders are busy can't send"
+                  redirect_to index_path
                 end
               else
                 flash[:error] = "all proofreaders are busy can't send"

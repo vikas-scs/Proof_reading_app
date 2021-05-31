@@ -45,7 +45,7 @@ module RailsAdmin
                   @error_count = count.length
               end
               if pos.length > cor.length
-                count = cos - pos
+                count = cor - pos
                   @error_count = count.length
               end
              @invite.error_count = @error_count
