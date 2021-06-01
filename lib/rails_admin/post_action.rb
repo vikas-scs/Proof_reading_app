@@ -77,7 +77,7 @@ module RailsAdmin
               redirect_to index_path
             end
           end
-        end
+         end
         end           
       end
     end 

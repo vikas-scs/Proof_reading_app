@@ -42,6 +42,7 @@ class UserWalletController < ApplicationController
       @post = Post.find(params[:id].to_i)
       @user = User.find(@post.user_id)
       @cost = Cost.find(1)
+      puts params.inspect
       @statement.statement_type = "credit"
       @statement.action = "distributing money for proofread"
       @statement.user_id = current_user.id

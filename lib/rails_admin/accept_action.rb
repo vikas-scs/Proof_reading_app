@@ -33,14 +33,8 @@ module RailsAdmin
                @post = Post.find(params[:post_id])
                pos  = @post.post.split(" ")
                cor = params[:corrected].split(" ")
-               if pos.length < cor.length || pos.length == cor.length
                   count = pos - cor
-                  @error_count = count.length
-              end
-              if pos.length > cor.length
-                count = cor - pos
-                  @error_count = count.length
-              end
+                  @error_count = count.length 
              @invite.error_count = @error_count
              @invite.invite_status = "accept"
              @post.status = "corrected"

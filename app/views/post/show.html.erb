@@ -27,12 +27,17 @@
    corrected post:<p><%= @invite.read_status %></p>
    <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
      <%= hidden_field_tag :"invite_id", @invite.id %>
+     <%= hidden_field_tag :"post_id", @post.id %>
+     <% if @post.cupon_id.present? %>
+      <%= @cupon.coupon_name %>
+      <%= hidden_field_tag :"cupon_code",@cupon.coupon_name %>
+     <% end %>
       <%= submit_tag "accept" %><br>
    <% end %>
-   <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
+    <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code" %>
        <%= hidden_field_tag :"invite_id", @invite.id %>
-       <%= hidden_field_tag :"post_id", @post.id %> 
+       <%= hidden_field_tag :"post_id", @post.id %>
        <%= submit_tag "apply coupon" %>
   <% end %>
 </center> 
