@@ -1,3 +1,4 @@
+<center>
 <% @invites.each do |invite| %>
   <% if invite.reciever_id == current_admin.id %> 
   <% if invite.invite_status == "accepted" %>
@@ -34,3 +35,4 @@
   <% end %>
   <% end %>
 <% end %>
+</center>

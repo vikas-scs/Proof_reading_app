@@ -23,14 +23,15 @@
      <%= cupon.coupon_name %>
    <% end %>
    <h1> proof reading done </h1>
-   corrected post:<p><%= @invite.read_status %>
+   original post:<p><%= @post.post %></p>
+   corrected post:<p><%= @invite.read_status %></p>
    <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
      <%= hidden_field_tag :"invite_id", @invite.id %>
       <%= submit_tag "accept" %><br>
    <% end %>
    <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
-       Cupon code:<%= text_field_tag :"cupon_code"%>
-       <%= hidden_field_tag :"invite_id", @invite.id %>
+       Cupon code:<%= text_field_tag :"cupon_code", @cupon.coupon_name %>
+       <%= hidden_field_tag :"invite_id", @invite.id %> 
        <%= submit_tag "apply coupon" %>
   <% end %>
 </center> 
@@ -60,7 +61,6 @@
       <tr>
         <th>description</th>
         <th>email</th>
-        <th>post id</th>
         <th>coupon</th>
         <th>coupon benifit</th>
         <th>amount</th>
@@ -68,7 +68,6 @@
       <tr>
         <td>proof reading for post</td>
        <td><%= current_user.email %></td>
-       <td><%= @post.id %></td>
        <td><%= @cupon.coupon_name rescue 0 %></td>
       <td><%= @post.coupon_benifit %></td>
        <td><%= @statement1.amount + @statement2.amount %>
@@ -76,7 +75,17 @@
    </table> 
    </center><br>   
  <% else %>
+    <p>Coupons:</p>
+   <% @cupons.each do |cupon| %>
+     <%= cupon.coupon_name %>
+   <% end %>
     <h1> proof reading is not yet done </h1>
+    <h4>saved coupon_id:</h4><%= @post.cupon_id %>
+    <%= form_tag(update_path(id: @post.id), :method => "patch") do %>
+       Cupon code:<%= text_field_tag :"cupon_code"%>
+       <%= submit_tag "save coupon" %>
+  <% end %>
+
 <% end %>
 <style>
 .myTable { 

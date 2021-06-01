@@ -26,7 +26,6 @@
       <tr>
         <th>description</th>
         <th>email</th>
-        <th>post id</th>
         <th>coupon</th>
         <th>coupon benifit</th>
         <th>amount</th>
@@ -34,7 +33,6 @@
       <tr>
         <td>proof reading for post</td>
        <td><%= current_user.email %></td>
-       <td><%= @post.id %></td>
        <td><%= @cupon.coupon_name rescue 0 %></td>
        <td><%= @post.coupon_benifit %></td>
        <td><%= @statement1.amount + @statement2.amount %>

@@ -10,6 +10,7 @@ class PostController < ApplicationController
   def show
     @cupons = Cupon.all
     @post = Post.find(params[:id])
+
     if @post.status == "done"
        @cupon = Cupon.find(@post.cupon_id)
   
@@ -30,12 +31,8 @@ class PostController < ApplicationController
       @idd = @invi.ids
          @invite = Invite.find(@idd[0])                             #getting invitation id from post status
         puts @invite.invite_status
-       if @invite.error_count >= 0
-         @post.post = @invite.read_status
-         @post.status = "corrected"                                #assigning status  for  post if proofreading is done  
-         @post.save
+        @cupon = Cupon.find(@post.cupon_id)
       end
-     end
      respond_to do |format|
       format.html
       format.pdf do
@@ -80,12 +77,15 @@ class PostController < ApplicationController
   end
   def update
       @post = Post.find(params[:id])
-
-      if @post.update(post_params)
-      redirect_to post_path
-    else
-      render :edit
-    end
+      @cupon = Cupon.where(coupon_name: params[:cupon_code])
+      @code = @cupon.ids
+      puts @code
+      @coupon = Cupon.find(@code[0])
+      @post.cupon_id = @coupon.id
+      if @post.save
+        flash[:notice] = "Coupon saved successfully"
+        redirect_to root_path
+      end
   end
   def destroy
   	 @post = Post.find(params[:id])

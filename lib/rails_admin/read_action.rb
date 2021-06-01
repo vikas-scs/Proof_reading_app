@@ -42,7 +42,7 @@ module RailsAdmin
               @statement = Statement.new
               @statement.statement_type = "debit"
               @statement.action = "fined by rejecting invitation"
-               @statement.ref_id = rand(7 ** 7)
+               @statement.ref_id = "rej#{rand(9 ** 9)}"
                @super = Admin.find(@invite.host_id)
                @wall = @admin.wallet - @fine
                Admin.transaction do
@@ -52,7 +52,22 @@ module RailsAdmin
                   @admin.save!
                   end
                end
+               @statement.post_id = @post.id
+               @statement.user_id = @user.id
+               @statement.admin_id = @admin.id
+               @statement.debit_from = @admin.email
+               @statement.credit_to = @super.email
                @super_add = @super.wallet + @fine
+               @statement.amount = @fine
+               @statement.debitor_balance = @admin.wallet
+               @statement.save
+               @statement = Statement.new
+               @statement.statement_type = "credit"
+               @statement.action = "getting fine from rejecting invitation"
+               @statement.ref_id = "fine#{rand(9 ** 9)}"
+               @statement.post_id = @post.id
+               @statement.user_id = @user.id
+                @statement.admin_id = @super.id
                Admin.transaction do
                   @super = Admin.first
                   @super.with_lock do
@@ -61,15 +76,14 @@ module RailsAdmin
                   end
                end 
                @statement.debit_from = @admin.email
-               @statement.credit_to = @super.email
-               
                @statement.amount = @fine
-               @admin.status = "available"
-               @invite.invite_status = "rejected"
-               puts "comiiiiiiiiiiiiii"
-               @admin.save 
+               @statement.credit_to = @super.email
                @statement.debitor_balance = @admin.wallet
                @statement.save
+               @admin.status = "available"
+               @invite.invite_status = "reject"
+               puts "comiiiiiiiiiiiiii"
+               @admin.save 
                 @adm = Admin.where(status: "available", role: "proof_reader")
                 puts "trrsssssssss"
                 @add = @adm.ids
@@ -88,11 +102,11 @@ module RailsAdmin
                  end
                 end
                 if @invite.save
-                  flash[:error] = "You got fine invitation diverted successfully"
+                  flash[:success] = "You got fine invitation diverted successfully"
                   redirect_to index_path
                 end
               else
-                flash[:error] = "You have insufficient wallet to reject, kindly start proofreading"
+                flash[:error] = "You have insufficient wallet to reject, kindly recharge wallet"
                 redirect_to index_path
               end
             end

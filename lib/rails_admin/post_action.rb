@@ -35,15 +35,18 @@ module RailsAdmin
                  flash[:error] = "this post is already accepted by other"
                  redirect_to index_path
               else
-               @admin = Admin.where(status: "available", role: "proof_reader")
-               @add = @admin.ids
-               puts @add
-               if @admin.length != 0
-                for i in 0..@admin.length - 1
-                  if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "reject")
+                @admin = Admin.where(status: "available", role: "proof_reader")
+                @add = @admin.ids
+                puts @add
+                if @admin.length != 0
+                  for i in 0..@admin.length - 1
+                    if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "reject")
                       puts "hellooooooooooo"
                       next
-                  else
+                    elsif Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "pending")
+                      puts "hellooooooooooo"
+                      next
+                    else
                       puts "its comming here"
                       @invit = Invite.new
                       @invit.post_id = @id
@@ -56,19 +59,25 @@ module RailsAdmin
                       @admin = Admin.find(@add[i])
                       @arr << @admin.email
                     end      
-                end 
-                if !@arr.empty?
-                 flash[:success] = "invitation sent successfully to #{@arr}"
-                 redirect_to index_path
+                  end 
+                  if !@arr.empty?
+                    flash[:success] = "invitation sent successfully to #{@arr}"
+                    redirect_to index_path
+                  else
+                    flash[:error] = "invitations already sent"
+                    redirect_to index_path
+                  end
+                else
+                  flash[:success] = "all proofreaders are busy"
+                    redirect_to index_path
                 end
               end
-             end
             else
               flash[:error] = "post proofreading is completed"
               redirect_to index_path
             end
           end
-          end
+        end
         end           
       end
     end 
