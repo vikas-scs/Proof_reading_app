@@ -31,7 +31,8 @@
    <% end %>
    <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code" %>
-       <%= hidden_field_tag :"invite_id", @invite.id %> 
+       <%= hidden_field_tag :"invite_id", @invite.id %>
+       <%= hidden_field_tag :"post_id", @post.id %> 
        <%= submit_tag "apply coupon" %>
   <% end %>
 </center> 

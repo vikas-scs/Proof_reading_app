@@ -61,20 +61,27 @@ class UserWalletController < ApplicationController
           puts @copon
           @coupons = @copon.ids
           @cupon = Cupon.find(@coupons.first)
-           @offer = (@total * @cupon.percentage) / 100
-           if @offer > @cupon.amount
-            @offer = @cupon.amount
+          if @cupon.expired_date <= Date.today
+            puts "date verified"
+            flash[:alert] = "copon is already expired"
+             redirect_to post_path(id: params[:post_id])
+             return
+          else
+            @offer = (@total * @cupon.percentage) / 100
+            if @offer > @cupon.amount
+             @offer = @cupon.amount
+            end
+             puts @offer
+             @post.coupon_benifit = @offer
+             @post.cupon_id = @coupons.first
+             @total = @total - @offer
+             @percentage = (@total * @cost.admin_commission) / 100
+             @pf = @total - @percentage
+             @extra = @user_wallet.lock_balance - @total
+             @user_wallet.lock_balance = 0  
+             @cupon.usage_count = @cupon.usage_count + 1
+             @cupon.save
            end
-           puts @offer
-           @post.coupon_benifit = @offer
-           @post.cupon_id = @coupons.first
-           @total = @total - @offer
-           @percentage = (@total * @cost.admin_commission) / 100
-           @pf = @total - @percentage
-           @extra = @user_wallet.lock_balance - @total
-           @user_wallet.lock_balance = 0  
-           @cupon.usage_count = @cupon.usage_count + 1
-           @cupon.save
         end
       else
          @extra = @user_wallet.lock_balance - @total  
@@ -88,7 +95,6 @@ class UserWalletController < ApplicationController
       @admin_wallet = @admin.wallet + @percentage
       Admin.transaction do
         @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
-
           @admin.wallet = @admin_wallet
           @admin.save!
        end
