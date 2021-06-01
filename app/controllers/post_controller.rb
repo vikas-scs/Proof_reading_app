@@ -17,19 +17,19 @@ class PostController < ApplicationController
     @state = Statement.where(post_id: @post.id)
     @statement = @state.ids
     puts @statement
-    @statement1 = Statement.find(@statement[0])
-    @statement2 = Statement.find(@statement[1])
+    @statement1 = Statement.find(@statement.first)
+    @statement2 = Statement.find(@statement.second)
   
     @invites = Invite.where(post_id: @post.id)
     @invit = @invites.ids
-    @invite = Invite.find(@invit[0])
+    @invite = Invite.find(@invit.first)
     @admin = Admin.find(@invite.reciever_id)
     puts @post.post
   end
     if Invite.exists?(post_id: params[:id], invite_status: "accept")                        #checking whether post is exist in invitations
       @invi = Invite.where(post_id: params[:id], invite_status: "accept")
       @idd = @invi.ids
-         @invite = Invite.find(@idd[0])                             #getting invitation id from post status
+         @invite = Invite.find(@idd.firsr)                             #getting invitation id from post status
         puts @invite.invite_status
         @cupon = Cupon.find(@post.cupon_id)
       end
@@ -80,7 +80,7 @@ class PostController < ApplicationController
       @cupon = Cupon.where(coupon_name: params[:cupon_code])
       @code = @cupon.ids
       puts @code
-      @coupon = Cupon.find(@code[0])
+      @coupon = Cupon.find(@code.first)
       @post.cupon_id = @coupon.id
       if @post.save
         flash[:notice] = "Coupon saved successfully"
