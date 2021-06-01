@@ -54,27 +54,30 @@ class UserWalletController < ApplicationController
       @statement.admin_id = @admin.id
       @proofread = Admin.find(@invite.reciever_id)
       @total = @cost.word_cost * @invite.error_count
+      puts @total
       if params[:cupon_code].present?
         if Cupon.exists?(:coupon_name => params[:cupon_code])
           @copon = Cupon.where(coupon_name: params[:cupon_code])
           puts @copon
           @coupons = @copon.ids
-          @cupon = Cupon.find(@coupons[0])
+          @cupon = Cupon.find(@coupons.first)
            @offer = (@total * @cupon.percentage) / 100
            if @offer > @cupon.amount
             @offer = @cupon.amount
            end
+           puts @offer
            @post.coupon_benifit = @offer
-           @post.cupon_id = @coupons[0]
-           @cutoff = @user_wallet.lock_balance - @offer
-           @user_wallet.lock_balance = 0
-           @percentage = (@offer * @cost.admin_commission) / 100
-           @pf = @offer - @percentage
+           @post.cupon_id = @coupons.first
+           @total = @total - @offer
+           @percentage = (@total * @cost.admin_commission) / 100
+           @pf = @total - @percentage
+           @extra = @user_wallet.lock_balance - @total
+           @user_wallet.lock_balance = 0  
            @cupon.usage_count = @cupon.usage_count + 1
            @cupon.save
         end
       else
-         @cutoff = @user_wallet.lock_balance - @total
+         @extra = @user_wallet.lock_balance - @total  
          @user_wallet.lock_balance = 0
          @percentage = (@total * @cost.admin_commission) / 100
          puts @percentage
@@ -84,13 +87,12 @@ class UserWalletController < ApplicationController
       @post.save
       @admin_wallet = @admin.wallet + @percentage
       Admin.transaction do
-        @admin = Admin.first
-        @admin.with_lock do
+        @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
+
           @admin.wallet = @admin_wallet
           @admin.save!
        end
-      end
-      @admin_refund = @user_wallet.balance + @cutoff
+      @admin_refund = @user_wallet.balance + @extra
       UserWallet.transaction do
        @user_wallet = UserWallet.first
        @user_wallet.with_lock do
@@ -100,12 +102,10 @@ class UserWalletController < ApplicationController
       end
       @proof = @pf + @proofread.wallet
       Admin.transaction do
-       @proofread = Admin.first
-       @proofread.with_lock do
+        @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
          @proofread.wallet = @proof
          @proofread.save!
        end
-      end
       @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email

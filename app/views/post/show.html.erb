@@ -30,7 +30,7 @@
       <%= submit_tag "accept" %><br>
    <% end %>
    <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
-       Cupon code:<%= text_field_tag :"cupon_code", @cupon.coupon_name %>
+       Cupon code:<%= text_field_tag :"cupon_code" %>
        <%= hidden_field_tag :"invite_id", @invite.id %> 
        <%= submit_tag "apply coupon" %>
   <% end %>
