@@ -81,6 +81,8 @@ module RailsAdmin
                @statement.credit_to = @super.email
                @statement.debitor_balance = @super.wallet
                @statement.save
+               @post.status = "pending"
+               @post.save
                @admin.status = "available"
                @invite.invite_status = "reject"
                puts "comiiiiiiiiiiiiii"
