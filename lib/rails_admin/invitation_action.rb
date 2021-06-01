@@ -40,6 +40,9 @@ module RailsAdmin
                 @invite.save
                 if @invite.invite_status == "accepted"
                 @admin.status = "available"
+                @post = Post.find(@invite.post_id)
+                @post.status = "processing"
+                @post.save
                  if @admin.save
                   flash[:success] = "request accepted successfully"
                   redirect_to index_path

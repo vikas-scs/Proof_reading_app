@@ -4,7 +4,7 @@
   <% if invite.invite_status == "accepted" %>
   <% @posts.each do |post| %>
    <% if post.id == invite.post_id %>
-      <% if post.status == "pending" %>
+      <% if post.status == "processing" %>
        post_id:<%= invite.post_id %>
      <%= form_tag(accept_action_path, :method => "get") do %>
      <%= hidden_field_tag :"post_id", invite.post_id %>

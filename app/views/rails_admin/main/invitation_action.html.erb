@@ -2,9 +2,7 @@
   <% if invite.reciever_id == current_admin.id %>
     <% if invite.invite_status == "pending" %>
       <% @posts.each do |post| %>
-         <% if post.invite_status == "accepted" %>
-              <% break %>
-         <% else %>
+         <% if post.id == invite.post_id %>
            <% if post.status == "pending" %>
               <p>request from:</p>
               post_id:<%= invite.post_id %>
