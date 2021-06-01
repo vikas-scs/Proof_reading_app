@@ -14,7 +14,7 @@ class PostController < ApplicationController
     if @post.status == "done"
        @cupon = Cupon.find(@post.cupon_id)
   
-       @state = Statement.where(post_id: @post.id)
+       @state = Statement.where(post_id: @post.id, action: "distributing money for proofread")
        @statement = @state.ids
     puts @statement
     @statement1 = Statement.find(@statement.first)
