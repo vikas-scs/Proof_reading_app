@@ -55,7 +55,7 @@ class PostController < ApplicationController
     @cost = Cost.find(1)
     @post = Post.new(post_params)
     @statement = Statement.new
-    @statement.type = "debit"
+    @statement.statement_type = "debit"
     @statement.action = "locking amount for post"
     @statement.user_id = current_user.id
     @statement.debit_from = current_user.email
