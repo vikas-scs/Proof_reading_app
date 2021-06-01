@@ -54,6 +54,13 @@ class PostController < ApplicationController
     @user_wallet = UserWallet.find(current_user.id)
     @cost = Cost.find(1)
     @post = Post.new(post_params)
+    @statement = Statement.new
+    @statement.type = "debit"
+    @statement.action = "locking amount for post"
+    @statement.user_id = current_user.id
+    @statement.debit_from = current_user.email
+    @statement.credit_to = current_user.email
+    
     puts "heloooooooo"
     str = params[:post].split(" ")                                            #getting each word in a sentense for cost of word 
     if @user_wallet.balance < @cost.word_cost * str.length
@@ -69,12 +76,16 @@ class PostController < ApplicationController
           @user_wallet.lock_balance = @cost.word_cost * str.length                    #locking the balance of getting from word count
           @user_wallet.save! 
        end
-      end         
+      end   
+    @statement.amount = @user_wallet.lock_balance
+    @statement.debitor_balance = @user_wallet.balance      
     @post.ref_id = params[:ref_id]                              
     @post.post = params["post"]
     @post.user_id = current_user.id
     @post.status = "pending"
     @post.save
+    @statement.post_id = @post.id
+    @statement.save
     flash[:notice] = "Post created successfully"
     redirect_to root_path
   end

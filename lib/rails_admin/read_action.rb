@@ -79,7 +79,7 @@ module RailsAdmin
                   end
                @statement.amount = @fine
                @statement.credit_to = @super.email
-               @statement.debitor_balance = @admin.wallet
+               @statement.debitor_balance = @super.wallet
                @statement.save
                @admin.status = "available"
                @invite.invite_status = "reject"
