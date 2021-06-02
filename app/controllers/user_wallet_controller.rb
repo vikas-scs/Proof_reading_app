@@ -63,7 +63,7 @@ class UserWalletController < ApplicationController
           @coupons = @copon.ids
           @cupon = Cupon.find(@coupons.first)
           @cuponusers = CuponsUsers.where(cupon_id: @cupon.id, user_id: current_user.id)
-          if @post.cupon_date < Date.today
+          if @post.cupon_date <=  Date.today
              @offer = (@total * @cupon.percentage) / 100
             if @offer > @cupon.amount
              @offer = @cupon.amount
@@ -77,8 +77,9 @@ class UserWalletController < ApplicationController
              @total = @total - @offer
              @percentage = (@total * @cost.admin_commission) / 100
              @pf = @total - @percentage
+             puts @percentage
+             puts "getting here"
              @extra = @user_wallet.lock_balance - @total
-             @user_wallet.lock_balance = 0  
              @cupon.save
           elsif @cupon.expired_date < Date.today
             puts "date verified"
