@@ -95,10 +95,17 @@ class PostController < ApplicationController
       @code = @cupon.ids
       puts @code
       @coupon = Cupon.find(@code.first)
-      @post.cupon_id = @coupon.id
-      if @post.save
+      if @coupon.expired_date <= Date.today
+            puts "date verified"
+            flash[:alert] = "copon is already expired"
+             redirect_to post_path(id: @post.id)
+             return
+      else
+        @post.cupon_id = @coupon.id
+        if @post.save
         flash[:notice] = "Coupon saved successfully"
         redirect_to root_path
+        end
       end
   end
   def destroy
