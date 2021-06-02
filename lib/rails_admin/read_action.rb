@@ -46,12 +46,7 @@ module RailsAdmin
               @statement.action = "fined by rejecting invitation"
                @statement.ref_id = "rej#{rand(9 ** 9)}"
                @super = Admin.find(@invite.host_id)
-               Admin.transaction do
-               @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
-                  @wall = @admin.wallet - @fine
-                  @admin.wallet = @wall
-                  @admin.save!
-                end
+               
 
                @statement.post_id = @post.id
                @statement.user_id = @user.id
@@ -63,24 +58,30 @@ module RailsAdmin
                @super_add = @super.wallet + @fine
                @statement.amount = @fine
                @statement.debitor_balance = @admin.wallet
-               @statement.save
-               @statement = Statement.new
-               @statement.debit_from = @admin.email
-               @statement.statement_type = "debit"
-               @statement.action = "getting fine from rejecting invitation"
-               @statement.ref_id = "fine#{rand(9 ** 9)}"
-               @statement.post_id = @post.id
-               @statement.user_id = @user.id
-                @statement.admin_id = @super.id
-                Admin.transaction do 
+               Admin.transaction do
+                @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
+                  @wall = @admin.wallet - @fine
+                  @admin.wallet = @wall
+                  @admin.save!
+                  @statement.save
+                end
+               @statement1 = Statement.new
+               @statement1.debit_from = @admin.email
+               @statement1.statement_type = "debit"
+               @statement1.action = "getting fine from rejecting invitation"
+               @statement1.ref_id = "fine#{rand(9 ** 9)}"
+               @statement1.post_id = @post.id
+               @statement1.user_id = @user.id
+                @statement1.admin_id = @super.id 
+               @statement1.amount = @fine
+               @statement1.credit_to = @super.email
+               @statement1.debitor_balance = @super.wallet
+               Admin.transaction do 
                   @super = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @super.email)
                   @super.wallet = @super_add
                   @super.save!
+                   @statement1.save
                   end
-               @statement.amount = @fine
-               @statement.credit_to = @super.email
-               @statement.debitor_balance = @super.wallet
-               @statement.save
                @post.status = "pending"
                @post.save
                @admin.status = "available"

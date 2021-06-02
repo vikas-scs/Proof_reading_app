@@ -94,11 +94,7 @@ class UserWalletController < ApplicationController
       @post.status = "done"
       @post.save
       @admin_wallet = @admin.wallet + @percentage
-      Admin.transaction do
-        @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
-          @admin.wallet = @admin_wallet
-          @admin.save!
-       end
+      
       @admin_refund = @user_wallet.balance + @extra
       UserWallet.transaction do
        @user_wallet = UserWallet.first
@@ -108,11 +104,7 @@ class UserWalletController < ApplicationController
        end
       end
       @proof = @pf + @proofread.wallet
-      Admin.transaction do
-        @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
-         @proofread.wallet = @proof
-         @proofread.save!
-       end
+      
       @invite.invite_status = "done"
       @proofread.status = "available"
       @statement.debit_from = @user.email
@@ -120,20 +112,30 @@ class UserWalletController < ApplicationController
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
       @statement.debitor_balance = @user_wallet.balance
-      @statement.save
-      @statement = Statement.new
-      @statement.statement_type = "credit"
-      @statement.action = "distributing money for proofread"
-      @statement.user_id = current_user.id
-      @statement.post_id = @post.id
-       @statement.ref_id = rand(7 ** 7)
-      @statement.invite_id = @invite.id
-      @statement.debit_from = @user.email
-      @statement.credit_to = @proofread.email
-      @statement.admin_id = @proofread.id
-      @statement.amount = @pf
-      @statement.debitor_balance = @user_wallet.balance
-      @statement.save
+      Admin.transaction do
+        @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
+         @proofread.wallet = @proof
+         @proofread.save!
+         @statement.save
+       end
+      @statement1 = Statement.new
+      @statement1.statement_type = "credit"
+      @statement1.action = "distributing money for proofread"
+      @statement1.user_id = current_user.id
+      @statement1.post_id = @post.id
+       @statement1.ref_id = rand(7 ** 7)
+      @statement1.invite_id = @invite.id
+      @statement1.debit_from = @user.email
+      @statement1.credit_to = @proofread.email
+      @statement1.admin_id = @proofread.id
+      @statement1.amount = @pf
+      @statement1.debitor_balance = @user_wallet.balance
+      Admin.transaction do
+        @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
+          @admin.wallet = @admin_wallet
+          @admin.save!
+          @statement1.save
+       end  
       if @invite.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
