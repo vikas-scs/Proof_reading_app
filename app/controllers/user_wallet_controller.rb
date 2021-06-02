@@ -68,21 +68,67 @@ class UserWalletController < ApplicationController
           puts @cupon.usage_count
           if @post.cupon_date.present?
             if @post.cupon_date <=  Date.today
-              @offer = (@total * @cupon.percentage) / 100
-              if @offer > @cupon.amount
-                @offer = @cupon.amount
-              end
-              @cu = CuponsUsers.new
-              @cu.user_id = current_user.id
-              @cu.cupon_id = @cupon.id
-              @post.coupon_benifit = @offer
-              @post.cupon_id = @coupons.first
-              @total = @total - @offer
-              @percentage = (@total * @cost.admin_commission) / 100
-              @pf = @total - @percentage
-              @extra = @user_wallet.lock_balance - @total
-              @cupon.save
-              @cu.save
+              if @cupon.percentage.present? && @cupon.amount.present?
+                puts "both present"
+                @offer = (@total * @cupon.percentage) / 100
+                if @offer > @cupon.amount
+                  @offer = @cupon.amount
+                end
+                @cu = CuponsUsers.new
+                @cu.user_id = current_user.id
+                @cu.cupon_id = @cupon.id
+                @post.coupon_benifit = @offer
+                @post.cupon_id = @coupons.first
+                @total = @total - @offer
+                @percentage = (@total * @cost.admin_commission) / 100
+                @pf = @total - @percentage
+                @extra = @user_wallet.lock_balance - @total
+                @cupon.save
+                @cu.save
+              elsif !@cupon.amount.present?
+                puts "amount not present"
+                @offer = (@total * @cupon.percentage) / 100
+                @cu = CuponsUsers.new
+                @cu.user_id = current_user.id
+                @cu.cupon_id = @cupon.id
+                @post.coupon_benifit = @offer
+                @post.cupon_id = @coupons.first
+                @total = @total - @offer
+                @percentage = (@total * @cost.admin_commission) / 100
+                @pf = @total - @percentage
+                @extra = @user_wallet.lock_balance - @total
+                @cupon.save
+                @cu.save
+              elsif !@cupon.percentage.present?
+                puts "percentage not present"
+                if @cupon.amount > @total
+                   @offer = @total
+                   @total = 0
+                   @cu = CuponsUsers.new
+                   @cu.user_id = current_user.id
+                   @cu.cupon_id = @cupon.id
+                   @post.coupon_benifit = @offer
+                   @post.cupon_id = @coupons.first
+                   @percentage = 0
+                   @pf = 0
+                   @extra = @user_wallet.lock_balance
+                   @cupon.save
+                   @cu.save
+                else
+                   @offer = @total - @cupon.amount
+                   @cu = CuponsUsers.new
+                   @cu.user_id = current_user.id
+                   @cu.cupon_id = @cupon.id
+                   @post.coupon_benifit = @offer
+                   @post.cupon_id = @coupons.first
+                   @total = @total - @offer
+                   @percentage = (@total * @cost.admin_commission) / 100
+                   @pf = @total - @percentage
+                   @extra = @user_wallet.lock_balance - @total
+                   @cupon.save
+                   @cu.save
+                end
+              end    
             elsif @cupon.expired_date < Date.today
               puts "date verified"
               flash[:alert] = "copon is already expired"
@@ -100,24 +146,70 @@ class UserWalletController < ApplicationController
             redirect_to post_path(id: params[:post_id])
             return
           else
-            @offer = (@total * @cupon.percentage) / 100
-            if @offer > @cupon.amount
-              @offer = @cupon.amount
-            end
-            @cu = CuponsUsers.new
-            puts @offer
-            @cu.user_id = current_user.id
-            @cu.cupon_id = @cupon.id
-            @post.coupon_benifit = @offer
-            @post.cupon_id = @coupons.first
-            @total = @total - @offer
-            @percentage = (@total * @cost.admin_commission) / 100
-            @pf = @total - @percentage
-            puts @percentage
-            puts "getting here"
-            @extra = @user_wallet.lock_balance - @total
-            @cupon.save
-            @cu.save
+            if @cupon.percentage.present? && @cupon.amount.present?
+                puts "both present"
+                @offer = (@total * @cupon.percentage) / 100
+                if @offer > @cupon.amount
+                  @offer = @cupon.amount
+                end
+                @cu = CuponsUsers.new
+                @cu.user_id = current_user.id
+                @cu.cupon_id = @cupon.id
+                @post.coupon_benifit = @offer
+                @post.cupon_id = @coupons.first
+                @total = @total - @offer
+                @percentage = (@total * @cost.admin_commission) / 100
+                @pf = @total - @percentage
+                @extra = @user_wallet.lock_balance - @total
+                @cupon.save
+                @cu.save
+              elsif !@cupon.amount.present?
+                puts "percentage not present"
+                @offer = (@total * @cupon.percentage) / 100
+                @cu = CuponsUsers.new
+                @cu.user_id = current_user.id
+                @cu.cupon_id = @cupon.id
+                @post.coupon_benifit = @offer
+                @post.cupon_id = @coupons.first
+                @total = @total - @offer
+                puts @total 
+                puts "here"
+                @percentage = (@total * @cost.admin_commission) / 100
+                puts @percentage
+                @pf = @total - @percentage
+                @extra = @user_wallet.lock_balance - @total
+                @cupon.save
+                @cu.save
+              elsif !@cupon.percentage.present?
+                puts "amount not present"
+                if @cupon.amount > @total
+                   @offer = @total
+                   @total = 0
+                   @cu = CuponsUsers.new
+                   @cu.user_id = current_user.id
+                   @cu.cupon_id = @cupon.id
+                   @post.coupon_benifit = @offer
+                   @post.cupon_id = @coupons.first
+                   @percentage = 0
+                   @pf = 0
+                   @extra = @user_wallet.lock_balance
+                   @cupon.save
+                   @cu.save
+                else
+                   @offer = @total - @cupon.amount
+                   @cu = CuponsUsers.new
+                   @cu.user_id = current_user.id
+                   @cu.cupon_id = @cupon.id
+                   @post.coupon_benifit = @offer
+                   @post.cupon_id = @coupons.first
+                   @total = @total - @offer
+                   @percentage = (@total * @cost.admin_commission) / 100
+                   @pf = @total - @percentage
+                   @extra = @user_wallet.lock_balance - @total
+                   @cupon.save
+                   @cu.save
+                end
+              end    
           end
         elsif !Cupon.exists?(:coupon_name => params[:cupon_code])
            puts "coming here"
