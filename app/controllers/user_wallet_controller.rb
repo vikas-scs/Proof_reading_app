@@ -43,6 +43,7 @@ class UserWalletController < ApplicationController
       @user = User.find(@post.user_id)
       @cost = Cost.find(1)
       puts params.inspect
+      @pf = 0
       @statement.statement_type = "credit"
       @statement.action = "distributing money for proofread"
       @statement.user_id = current_user.id
@@ -53,7 +54,8 @@ class UserWalletController < ApplicationController
       @invite = Invite.find(params[:invite_id])
       @admin = Admin.find(@invite.host_id)
       @statement.admin_id = @admin.id
-      @proofread = Admin.find(@invite.reciever_id)
+      puts @invite.reciever_id
+      puts "check"
       @total = @cost.word_cost * @invite.error_count
       puts @total
       if params[:cupon_code].present?
@@ -70,6 +72,7 @@ class UserWalletController < ApplicationController
             if @post.cupon_date <=  Date.today
               if @cupon.percentage.present? && @cupon.amount.present?
                 puts "both present"
+                puts "yes"
                 @offer = (@total * @cupon.percentage) / 100
                 if @offer > @cupon.amount
                   @offer = @cupon.amount
@@ -146,8 +149,9 @@ class UserWalletController < ApplicationController
             redirect_to post_path(id: params[:post_id])
             return
           else
-            if @cupon.percentage.present? && @cupon.amount.present?
+              if @cupon.percentage.present? && @cupon.amount.present?
                 puts "both present"
+                puts "no"
                 @offer = (@total * @cupon.percentage) / 100
                 if @offer > @cupon.amount
                   @offer = @cupon.amount
@@ -160,6 +164,8 @@ class UserWalletController < ApplicationController
                 @total = @total - @offer
                 @percentage = (@total * @cost.admin_commission) / 100
                 @pf = @total - @percentage
+                puts @pf
+                puts "above"
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
                 @cu.save
@@ -210,7 +216,7 @@ class UserWalletController < ApplicationController
                    @cu.save
                 end
               end    
-          end
+            end
         elsif !Cupon.exists?(:coupon_name => params[:cupon_code])
            puts "coming here"
            flash[:alert] = "invalid coupon"
@@ -218,33 +224,24 @@ class UserWalletController < ApplicationController
             return
         end
       else
-         @extra = @user_wallet.lock_balance - @total  
+         @extra = @user_wallet.lock_balance - @total 
+         puts "willl not come here" 
          @user_wallet.lock_balance = 0
          @percentage = (@total * @cost.admin_commission) / 100
          puts @percentage
          @pf = @total - @percentage
       end
+      @proofread = Admin.find(@invite.reciever_id)
       @post.status = "done"
       @post.save
       @admin_wallet = @admin.wallet + @percentage
-      
-      @admin_refund = @user_wallet.balance + @extra
-      UserWallet.transaction do
-       @user_wallet = UserWallet.first
-       @user_wallet.with_lock do
-         @user_wallet.balance = @admin_refund
-         @user_wallet.save!
-       end
-      end
-      @proof = @pf + @proofread.wallet
-      
-      @invite.invite_status = "done"
-      @proofread.status = "available"
       @statement.debit_from = @user.email
       @statement.invite_id = @invite.id
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
-      
+      puts @proofread.wallet
+      puts @pf
+      @proof = @pf + @proofread.wallet 
       Admin.transaction do
         @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
          @proofread.wallet = @proof
@@ -252,6 +249,12 @@ class UserWalletController < ApplicationController
          @statement.debitor_balance = @proofread.wallet
          @statement.save
        end
+      
+      @admin_refund = @user_wallet.balance + @extra
+      @invite.invite_status = "done"
+      @proofread.status = "available"
+      
+      
       @statement1 = Statement.new
       @statement1.statement_type = "credit"
       @statement1.action = "distributing money for proofread"
@@ -269,9 +272,27 @@ class UserWalletController < ApplicationController
           @admin.wallet = @admin_wallet
           @admin.save!
           @statement1.debitor_balance = @admin.wallet
-          @statement1.save
-          
+          @statement1.save  
        end  
+       @statement2 = Statement.new
+       @statement2.statement_type = "credit"
+      @statement2.action = "refund_amount"
+      @statement2.user_id = current_user.id
+      @statement2.post_id = @post.id
+       @statement2.ref_id = rand(7 ** 7)
+      @statement2.invite_id = @invite.id
+      @statement2.credit_to = @user.email
+      @statement2.admin_id = @proofread.id
+      @statement2.amount = @pf
+      
+       UserWallet.transaction do
+       @user_wallet = UserWallet.first
+       @user_wallet.with_lock do
+         @user_wallet.balance = @admin_refund
+         @user_wallet.save!
+         @statement2.save
+       end
+      end
       if @invite.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
