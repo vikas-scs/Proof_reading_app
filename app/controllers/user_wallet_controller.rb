@@ -62,17 +62,16 @@ class UserWalletController < ApplicationController
           puts @copon
           @coupons = @copon.ids
           @cupon = Cupon.find(@coupons.first)
-          if @cupon.expired_date <= Date.today
-            puts "date verified"
-            flash[:alert] = "copon is already expired"
-             redirect_to post_path(id: params[:post_id])
-             return
-          else
-            @offer = (@total * @cupon.percentage) / 100
+          @cuponusers = CuponsUsers.where(cupon_id: @cupon.id, user_id: current_user.id)
+          if @post.cupon_date < Date.today
+             @offer = (@total * @cupon.percentage) / 100
             if @offer > @cupon.amount
              @offer = @cupon.amount
             end
+             @cu = CuponsUsers.new
              puts @offer
+             @cu.user_id = current_user.id
+             @cu.cupon_id = @cupon.id
              @post.coupon_benifit = @offer
              @post.cupon_id = @coupons.first
              @total = @total - @offer
@@ -80,9 +79,17 @@ class UserWalletController < ApplicationController
              @pf = @total - @percentage
              @extra = @user_wallet.lock_balance - @total
              @user_wallet.lock_balance = 0  
-             @cupon.usage_count = @cupon.usage_count + 1
              @cupon.save
-           end
+          elsif @cupon.expired_date < Date.today
+            puts "date verified"
+            flash[:alert] = "copon is already expired"
+             redirect_to post_path(id: params[:post_id])
+             return
+           elsif @cuponusers.length > @cupon.usage_count
+               flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
+               redirect_to post_path(id: params[:post_id])
+               return
+             end
         end
       else
          @extra = @user_wallet.lock_balance - @total  
@@ -135,8 +142,9 @@ class UserWalletController < ApplicationController
           @admin.wallet = @admin_wallet
           @admin.save!
           @statement1.save
+          @invite.save
        end  
-      if @invite.save
+      if @cu.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
       end

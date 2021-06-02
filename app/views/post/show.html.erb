@@ -34,7 +34,7 @@
      <% end %>
       <%= submit_tag "accept" %><br>
    <% end %>
-     <% if @post.cupon_id.present? %>
+     <% if !@post.cupon_id.present? %>
     <%= form_tag(coupon_update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code" %>
        <%= hidden_field_tag :"invite_id", @invite.id %>
