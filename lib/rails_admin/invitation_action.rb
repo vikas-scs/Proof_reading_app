@@ -50,6 +50,8 @@ module RailsAdmin
                 end
               end
               if @invite.invite_status == "rejected"
+                @invite.invite_status = "reject"
+
                 puts "hello"
                 puts current_admin.id
                 @adm = Admin.where(status: "available", role: "proof_reader")
@@ -71,8 +73,10 @@ module RailsAdmin
                       @invit.error_count = 0
                       @invit.save
                     end
+                    if @invite.save
                      flash[:success] = "invitation divirted successfully"
                      redirect_to index_path
+                   end
                   end
                 end   
               end
