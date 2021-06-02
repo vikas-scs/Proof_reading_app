@@ -12,7 +12,11 @@ class PostController < ApplicationController
     @post = Post.find(params[:id])
 
     if @post.status == "done"
+      puts params.inspect
+      @post = Post.find(params[:id])
+      if @post.cupon_id.present?
        @cupon = Cupon.find(@post.cupon_id)
+     end
   
        @state = Statement.where(post_id: @post.id, action: "distributing money for proofread")
        @statement = @state.ids

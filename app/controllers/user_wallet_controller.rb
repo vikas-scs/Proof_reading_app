@@ -68,57 +68,62 @@ class UserWalletController < ApplicationController
           puts @cupon.usage_count
           if @post.cupon_date.present?
             if @post.cupon_date <=  Date.today
-             @offer = (@total * @cupon.percentage) / 100
-            if @offer > @cupon.amount
-             @offer = @cupon.amount
+              @offer = (@total * @cupon.percentage) / 100
+              if @offer > @cupon.amount
+                @offer = @cupon.amount
+              end
+              @cu = CuponsUsers.new
+              @cu.user_id = current_user.id
+              @cu.cupon_id = @cupon.id
+              @post.coupon_benifit = @offer
+              @post.cupon_id = @coupons.first
+              @total = @total - @offer
+              @percentage = (@total * @cost.admin_commission) / 100
+              @pf = @total - @percentage
+              @extra = @user_wallet.lock_balance - @total
+              @cupon.save
+              @cu.save
+            elsif @cupon.expired_date < Date.today
+              puts "date verified"
+              flash[:alert] = "copon is already expired"
+              redirect_to post_path(id: params[:post_id])
+              return
             end
-             @cu = CuponsUsers.new
-             @cu.user_id = current_user.id
-             @cu.cupon_id = @cupon.id
-             @post.coupon_benifit = @offer
-             @post.cupon_id = @coupons.first
-             @total = @total - @offer
-             @percentage = (@total * @cost.admin_commission) / 100
-             @pf = @total - @percentage
-             @extra = @user_wallet.lock_balance - @total
-             @cupon.save
           elsif @cupon.expired_date < Date.today
             puts "date verified"
             flash[:alert] = "copon is already expired"
-             redirect_to post_path(id: params[:post_id])
-             return
-           end
-         else
-          if @cupon.expired_date < Date.today
-            puts "date verified"
-            flash[:alert] = "copon is already expired"
-             redirect_to post_path(id: params[:post_id])
-             return
-           elsif @cuponusers.length > @cupon.usage_count
-              puts "over usage"
-               flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
-               redirect_to post_path(id: params[:post_id])
-               return
-             else
-             @offer = (@total * @cupon.percentage) / 100
-             if @offer > @cupon.amount
-                @offer = @cupon.amount
-             end
-             @cu = CuponsUsers.new
-             puts @offer
-             @cu.user_id = current_user.id
-             @cu.cupon_id = @cupon.id
-             @post.coupon_benifit = @offer
-             @post.cupon_id = @coupons.first
-             @total = @total - @offer
-             @percentage = (@total * @cost.admin_commission) / 100
-             @pf = @total - @percentage
-             puts @percentage
-             puts "getting here"
-             @extra = @user_wallet.lock_balance - @total
-             @cupon.save
+            redirect_to post_path(id: params[:post_id])
+            return
+          elsif @cuponusers.length > @cupon.usage_count
+            puts "over usage"
+            flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
+            redirect_to post_path(id: params[:post_id])
+            return
+          else
+            @offer = (@total * @cupon.percentage) / 100
+            if @offer > @cupon.amount
+              @offer = @cupon.amount
+            end
+            @cu = CuponsUsers.new
+            puts @offer
+            @cu.user_id = current_user.id
+            @cu.cupon_id = @cupon.id
+            @post.coupon_benifit = @offer
+            @post.cupon_id = @coupons.first
+            @total = @total - @offer
+            @percentage = (@total * @cost.admin_commission) / 100
+            @pf = @total - @percentage
+            puts @percentage
+            puts "getting here"
+            @extra = @user_wallet.lock_balance - @total
+            @cupon.save
+            @cu.save
           end
-        end
+        elsif !Cupon.exists?(:coupon_name => params[:cupon_code])
+           puts "coming here"
+           flash[:alert] = "invalid coupon"
+            redirect_to post_path(id: params[:post_id])
+            return
         end
       else
          @extra = @user_wallet.lock_balance - @total  
@@ -173,9 +178,9 @@ class UserWalletController < ApplicationController
           @admin.save!
           @statement1.debitor_balance = @admin.wallet
           @statement1.save
-          @invite.save
+          
        end  
-      if @cu.save
+      if @invite.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path
       end
