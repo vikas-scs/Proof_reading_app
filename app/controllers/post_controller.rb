@@ -95,8 +95,10 @@ class PostController < ApplicationController
       @code = @cupon.ids
       puts @code
       @coupon = Cupon.find(@code.first)
-      @cuponusers = CuponsUsers.where(cupon_id: @coupon.id, user_id: current_user.id)
-      if @coupon.expired_date <= Date.today
+      @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)
+      puts @cuponusers.length
+      puts @coupon.usage_count
+      if @coupon.expired_date < Date.today
             puts "date verified"
             flash[:alert] = "copon is already expired"
              redirect_to post_path(id: @post.id)
