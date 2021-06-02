@@ -147,11 +147,12 @@ class UserWalletController < ApplicationController
       @statement.invite_id = @invite.id
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
-      @statement.debitor_balance = @user_wallet.balance
+      
       Admin.transaction do
         @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
          @proofread.wallet = @proof
          @proofread.save!
+         @statement.debitor_balance = @proofread.wallet
          @statement.save
        end
       @statement1 = Statement.new
@@ -165,11 +166,12 @@ class UserWalletController < ApplicationController
       @statement1.credit_to = @proofread.email
       @statement1.admin_id = @proofread.id
       @statement1.amount = @pf
-      @statement1.debitor_balance = @user_wallet.balance
+      
       Admin.transaction do
         @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
           @admin.wallet = @admin_wallet
           @admin.save!
+          @statement1.debitor_balance = @admin.wallet
           @statement1.save
           @invite.save
        end  

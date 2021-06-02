@@ -57,12 +57,13 @@ module RailsAdmin
                puts "super_admin_email#{@super.email}"
                @super_add = @super.wallet + @fine
                @statement.amount = @fine
-               @statement.debitor_balance = @admin.wallet
+               
                Admin.transaction do
                 @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
                   @wall = @admin.wallet - @fine
                   @admin.wallet = @wall
                   @admin.save!
+                  @statement.debitor_balance = @admin.wallet
                   @statement.save
                 end
                @statement1 = Statement.new
@@ -75,11 +76,12 @@ module RailsAdmin
                 @statement1.admin_id = @super.id 
                @statement1.amount = @fine
                @statement1.credit_to = @super.email
-               @statement1.debitor_balance = @super.wallet
+               
                Admin.transaction do 
                   @super = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @super.email)
                   @super.wallet = @super_add
                   @super.save!
+                  @statement1.debitor_balance = @super.wallet
                    @statement1.save
                   end
                @post.status = "pending"
