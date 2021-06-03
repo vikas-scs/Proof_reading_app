@@ -61,7 +61,7 @@ class UserWalletController < ApplicationController
       @costs = Statement.where(action: "locking amount for post", post_id: @post.id)
       @cos = @costs.ids
       @state = Statement.find(@cos.first)
-      @cost.word_cost = @state.word_cost
+      word_cost = @state.word_cost
       @costs = Cost.find(1)
       puts params.inspect
       @pf = 0
@@ -77,7 +77,7 @@ class UserWalletController < ApplicationController
       @statement.admin_id = @admin.id
       puts @invite.reciever_id
       puts "check"
-      @total = @cost.word_cost * @invite.error_count
+      @total = word_cost * @invite.error_count
       puts @total
       if params[:cupon_code].present?
         if Cupon.exists?(:coupon_name => params[:cupon_code])
@@ -307,13 +307,11 @@ class UserWalletController < ApplicationController
       @statement2.amount = @pf
       
        UserWallet.transaction do
-       @user_wallet = UserWallet.first
-       @user_wallet.with_lock do
+        @user_wallet = UserWallet.lock("FOR UPDATE NOWAIT").find_by(user_id: current_user.id)
          @user_wallet.balance = @admin_refund
          @user_wallet.save!
          @statement2.save
-       end
-      end
+         end
       if @invite.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path

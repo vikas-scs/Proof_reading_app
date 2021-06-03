@@ -72,8 +72,8 @@ class PostController < ApplicationController
       redirect_to new_wallet_path(id: current_user.id)
       return
     end
-    @money = @user_wallet.balance - (@cost.word_cost * str.length)
-    @statement.debitor_balance = @user_wallet.balance
+    @money = @user_wallet.balance - @cost.word_cost * str.length
+    
     @statement.ref_id = rand(7 ** 7)  
     
     @post.ref_id = params[:ref_id]                              
@@ -84,15 +84,15 @@ class PostController < ApplicationController
       @statement.post_id = @post.id
       @statement.word_cost = @cost.word_cost 
       @statement.post_id = @post.id
+
       UserWallet.transaction do
-        @user_wallet = UserWallet.first
-        @user_wallet.with_lock do
+         @user_wallet = UserWallet.lock("FOR UPDATE NOWAIT").find_by(user_id: current_user.id)
           @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
-          @user_wallet.lock_balance = @cost.word_cost * str.length 
-          @statement.amount = @user_wallet.lock_balance                   #locking the balance of getting from word count
+          @user_wallet.lock_balance = @cost.word_cost * str.length
           @user_wallet.save! 
+          @statement.amount = @user_wallet.lock_balance  
+          @statement.debitor_balance = @user_wallet.balance                 #locking the balance of getting from word count
           @statement.save
-       end
       end   
       # UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_now
       
