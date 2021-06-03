@@ -74,7 +74,14 @@ class PostController < ApplicationController
     @money = @user_wallet.balance - @cost.word_cost * str.length
     @statement.amount = @user_wallet.lock_balance
     @statement.debitor_balance = @user_wallet.balance  
-    UserWallet.transaction do
+    
+    @post.ref_id = params[:ref_id]                              
+    @post.post = params["post"]
+    @post.user_id = current_user.id
+    @post.status = "pending"
+    if @post.save
+      @statement.post_id = @post.id
+      UserWallet.transaction do
         @user_wallet = UserWallet.first
         @user_wallet.with_lock do
           @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
@@ -83,11 +90,6 @@ class PostController < ApplicationController
           @statement.save
        end
       end   
-    @post.ref_id = params[:ref_id]                              
-    @post.post = params["post"]
-    @post.user_id = current_user.id
-    @post.status = "pending"
-    if @post.save
       UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_later
       @statement.post_id = @post.id
       flash[:notice] = "Post created successfully"
