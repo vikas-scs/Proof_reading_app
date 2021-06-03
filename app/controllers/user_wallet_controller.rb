@@ -60,7 +60,9 @@ class UserWalletController < ApplicationController
       @user = User.find(@post.user_id)
       @costs = Statement.where(action: "locking amount for post", post_id: @post.id)
       @cos = @costs.ids
-      @cost = Statement.find(@cos.first)
+      @state = Statement.find(@cos.first)
+      @cost.word_cost = @state.word_cost
+      @costs = Cost.find(1)
       puts params.inspect
       @pf = 0
       @statement.statement_type = "credit"
@@ -102,7 +104,7 @@ class UserWalletController < ApplicationController
                 @post.coupon_benifit = @offer
                 @post.cupon_id = @coupons.first
                 @total = @total - @offer
-                @percentage = (@total * @cost.admin_commission) / 100
+                @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
@@ -116,7 +118,7 @@ class UserWalletController < ApplicationController
                 @post.coupon_benifit = @offer
                 @post.cupon_id = @coupons.first
                 @total = @total - @offer
-                @percentage = (@total * @cost.admin_commission) / 100
+                @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
@@ -144,7 +146,7 @@ class UserWalletController < ApplicationController
                    @post.coupon_benifit = @offer
                    @post.cupon_id = @coupons.first
                    @total = @total - @offer
-                   @percentage = (@total * @cost.admin_commission) / 100
+                   @percentage = (@total * @costs.admin_commission) / 100
                    @pf = @total - @percentage
                    @extra = @user_wallet.lock_balance - @total
                    @cupon.save
@@ -181,7 +183,7 @@ class UserWalletController < ApplicationController
                 @post.coupon_benifit = @offer
                 @post.cupon_id = @coupons.first
                 @total = @total - @offer
-                @percentage = (@total * @cost.admin_commission) / 100
+                @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
                 puts @pf
                 puts "above"
@@ -199,7 +201,7 @@ class UserWalletController < ApplicationController
                 @total = @total - @offer
                 puts @total 
                 puts "here"
-                @percentage = (@total * @cost.admin_commission) / 100
+                @percentage = (@total * @costs.admin_commission) / 100
                 puts @percentage
                 @pf = @total - @percentage
                 @extra = @user_wallet.lock_balance - @total
@@ -228,7 +230,7 @@ class UserWalletController < ApplicationController
                    @post.coupon_benifit = @offer
                    @post.cupon_id = @coupons.first
                    @total = @total - @offer
-                   @percentage = (@total * @cost.admin_commission) / 100
+                   @percentage = (@total * @costs.admin_commission) / 100
                    @pf = @total - @percentage
                    @extra = @user_wallet.lock_balance - @total
                    @cupon.save
@@ -246,7 +248,7 @@ class UserWalletController < ApplicationController
          @extra = @user_wallet.lock_balance - @total 
          puts "willl not come here" 
          @user_wallet.lock_balance = 0
-         @percentage = (@total * @cost.admin_commission) / 100
+         @percentage = (@total * @costs.admin_commission) / 100
          puts @percentage
          @pf = @total - @percentage
       end
