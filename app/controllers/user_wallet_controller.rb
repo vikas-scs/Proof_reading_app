@@ -60,7 +60,7 @@ class UserWalletController < ApplicationController
       @user = User.find(@post.user_id)
       @costs = Statement.where(action: "locking amount for post", post_id: @post.id)
       @cos = @costs.ids
-      @cost = Cost.find(@cos.first)
+      @cost = Statement.find(@cos.first)
       puts params.inspect
       @pf = 0
       @statement.statement_type = "credit"
