@@ -14,6 +14,12 @@ class UserWalletController < ApplicationController
     @wallet = UserWallet.find(params[:id])
   end
   def create
+    @statement = Statement.new
+    @statement.statement_type = "credit"
+    @statement.action = "adding money to user wallet"
+    @statement.user_id = current_user.id
+    @statement.credit_to = current_user.email
+    @statement.ref_id = rand(7 ** 7)
   	amount = params["balance"].to_f
   	if amount < 0
   	    	flash[:notice] = "invalid amount"
@@ -21,14 +27,25 @@ class UserWalletController < ApplicationController
   	    	return
   	end
   	puts amount
+    @statement.amount = amount
   	a = current_user.user_wallet.balance
   	puts a
   	total = a + amount
     @wallet = UserWallet.find(current_user.id)
     puts total
     @wallet.balance = total
+     UserWallet.transaction do
+       @user_wallet = UserWallet.first
+       @user_wallet.with_lock do
+         @wallet.balance = total
+         @wallet.save
+         @statement.debitor_balance = @wallet.balance
+         @statement.save
+       end
+      end
     respond_to do |format|
       if @wallet.save
+
         format.html { redirect_to wallets_path, notice: "money was added successfully." }
         format.json { render :show, status: :created, location: @post }
       else
@@ -41,7 +58,9 @@ class UserWalletController < ApplicationController
       @statement = Statement.new
       @post = Post.find(params[:id].to_i)
       @user = User.find(@post.user_id)
-      @cost = Cost.find(1)
+      @costs = Statement.where(action: "locking amount for post", post_id: @post.id)
+      @cos = @costs.ids
+      @cost = Cost.find(@cos.first)
       puts params.inspect
       @pf = 0
       @statement.statement_type = "credit"

@@ -2,10 +2,11 @@ class PostController < ApplicationController
 	def index
        if user_signed_in?
        	@posts = current_user.posts                              #assigning posts of current user
-        end
+      end
     end
   def new
     @post = Post.new 
+    @cost = Cost.find(1)
   end
   def show
     @cupons = Cupon.all
@@ -73,7 +74,8 @@ class PostController < ApplicationController
     end
     @money = @user_wallet.balance - @cost.word_cost * str.length
     @statement.amount = @user_wallet.lock_balance
-    @statement.debitor_balance = @user_wallet.balance  
+    @statement.debitor_balance = @user_wallet.balance
+    @statement.ref_id = rand(7 ** 7)  
     
     @post.ref_id = params[:ref_id]                              
     @post.post = params["post"]
@@ -81,6 +83,7 @@ class PostController < ApplicationController
     @post.status = "pending"
     if @post.save
       @statement.post_id = @post.id
+      @statement.word_cost = @cost.word_cost 
       UserWallet.transaction do
         @user_wallet = UserWallet.first
         @user_wallet.with_lock do
