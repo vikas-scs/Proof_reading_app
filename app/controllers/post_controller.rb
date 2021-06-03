@@ -72,8 +72,7 @@ class PostController < ApplicationController
       redirect_to new_wallet_path(id: current_user.id)
       return
     end
-    @money = @user_wallet.balance - @cost.word_cost * str.length
-    @statement.amount = @user_wallet.lock_balance
+    @money = @user_wallet.balance - (@cost.word_cost * str.length)
     @statement.debitor_balance = @user_wallet.balance
     @statement.ref_id = rand(7 ** 7)  
     
@@ -84,17 +83,19 @@ class PostController < ApplicationController
     if @post.save
       @statement.post_id = @post.id
       @statement.word_cost = @cost.word_cost 
+      @statement.post_id = @post.id
       UserWallet.transaction do
         @user_wallet = UserWallet.first
         @user_wallet.with_lock do
           @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
-          @user_wallet.lock_balance = @cost.word_cost * str.length                    #locking the balance of getting from word count
+          @user_wallet.lock_balance = @cost.word_cost * str.length 
+          @statement.amount = @user_wallet.lock_balance                   #locking the balance of getting from word count
           @user_wallet.save! 
           @statement.save
        end
       end   
-      UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_now
-      @statement.post_id = @post.id
+      # UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_now
+      
       flash[:notice] = "Post created successfully"
       redirect_to root_path
     end
