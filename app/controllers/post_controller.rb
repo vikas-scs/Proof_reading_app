@@ -84,6 +84,7 @@ class PostController < ApplicationController
     if @post.save
       @statement.post_id = @post.id
       @statement.word_cost = @cost.word_cost 
+      @statement.admin_commission = @cost.admin_commission
       UserWallet.transaction do
         @user_wallet = UserWallet.first
         @user_wallet.with_lock do

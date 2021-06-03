@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_21_101136) do
+ActiveRecord::Schema.define(version: 2021_06_03_033849) do
 
   create_table "admins", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -21,18 +21,86 @@ ActiveRecord::Schema.define(version: 2021_05_21_101136) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "role"
-    t.string "status"
+    t.float "wallet", default: 0.0
+    t.string "status", default: "available"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+  end
+
+  create_table "costs", force: :cascade do |t|
+    t.float "word_cost"
+    t.float "admin_commission"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.float "fine_amount"
+  end
+
+  create_table "coupons", force: :cascade do |t|
+    t.string "coupon_code"
+    t.float "amount"
+    t.float "percentage"
+    t.integer "coupon_usage_count"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "cupons", force: :cascade do |t|
+    t.string "coupon_name"
+    t.float "amount"
+    t.float "percentage"
+    t.integer "usage_count"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.date "expired_date"
+  end
+
+  create_table "cupons_users", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "cupon_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "invites", force: :cascade do |t|
+    t.integer "post_id"
+    t.integer "host_id"
+    t.integer "reciever_id"
+    t.string "invite_status"
+    t.string "read_status"
+    t.integer "error_count"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "time_taken"
   end
 
   create_table "posts", force: :cascade do |t|
     t.string "post"
     t.string "status"
     t.integer "user_id"
-    t.integer "coupon_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "cupon_id"
+    t.integer "ref_id"
+    t.float "coupon_benifit"
+    t.date "cupon_date"
+  end
+
+  create_table "statements", force: :cascade do |t|
+    t.string "statement_type"
+    t.string "action"
+    t.integer "user_id"
+    t.integer "post_id"
+    t.integer "admin_id"
+    t.string "debit_from"
+    t.string "credit_to"
+    t.float "amount"
+    t.float "debitor_balance"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "invite_id"
+    t.string "ref_id"
+    t.float "word_cost"
+    t.float "admin_commission"
   end
 
   create_table "user_wallets", force: :cascade do |t|
@@ -60,6 +128,9 @@ ActiveRecord::Schema.define(version: 2021_05_21_101136) do
     t.datetime "last_sign_in_at"
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "mobile"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
