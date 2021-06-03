@@ -93,7 +93,7 @@ class PostController < ApplicationController
           @statement.save
        end
       end   
-      UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_later
+      UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_now
       @statement.post_id = @post.id
       flash[:notice] = "Post created successfully"
       redirect_to root_path
