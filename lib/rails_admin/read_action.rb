@@ -93,7 +93,7 @@ module RailsAdmin
                 @adm = Admin.where(status: "available", role: "proof_reader")
                 puts "trrsssssssss"
                 @add = @adm.ids
-                if !@adm.length == 0
+                if @adm.length != 0
                     for i in 0..@adm.length - 1
                       if @add[i] != current_admin.id
                         @invit = Invite.new
