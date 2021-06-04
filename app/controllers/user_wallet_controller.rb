@@ -253,8 +253,6 @@ class UserWalletController < ApplicationController
          @pf = @total - @percentage
       end
       @proofread = Admin.find(@invite.reciever_id)
-      @post.status = "done"
-      @post.save
       @admin_wallet = @admin.wallet + @percentage
       @statement.debit_from = @user.email
       @statement.invite_id = @invite.id
@@ -263,12 +261,15 @@ class UserWalletController < ApplicationController
       puts @proofread.wallet
       puts @pf
       @proof = @pf + @proofread.wallet 
-      Admin.transaction do
-        @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
-         @proofread.wallet = @proof
-         @proofread.save!
-         @statement.debitor_balance = @proofread.wallet
-         @statement.save
+      
+       Admin.transaction do
+        @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
+          @admin.wallet = @admin_wallet
+          @admin.save!
+          
+          @statement.debitor_balance = @admin.wallet
+          
+          @statement.save  
        end
       
       @admin_refund = @user_wallet.balance + @extra
@@ -287,14 +288,14 @@ class UserWalletController < ApplicationController
       @statement1.credit_to = @proofread.email
       @statement1.admin_id = @proofread.id
       @statement1.amount = @pf
-      
       Admin.transaction do
-        @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
-          @admin.wallet = @admin_wallet
-          @admin.save!
-          @statement1.debitor_balance = @admin.wallet
-          @statement1.save  
-       end  
+        @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
+         @proofread.wallet = @proof
+         @proofread.save!
+         @statement1.debitor_balance = @proofread.wallet
+         @statement1.save
+       end
+        
        @statement2 = Statement.new
        @statement2.statement_type = "credit"
       @statement2.action = "refund_amount"
@@ -303,15 +304,18 @@ class UserWalletController < ApplicationController
        @statement2.ref_id = rand(7 ** 7)
       @statement2.invite_id = @invite.id
       @statement2.credit_to = @user.email
-      @statement2.admin_id = @proofread.id
-      @statement2.amount = @pf
+      @statement2.admin_id = @admin.id
+      @statement2.amount = @extra
       
        UserWallet.transaction do
         @user_wallet = UserWallet.lock("FOR UPDATE NOWAIT").find_by(user_id: current_user.id)
-         @user_wallet.balance = @admin_refund
+         @user_wallet.balance = @admin_refund 
          @user_wallet.save!
+         @statement2.debitor_balance = @user_wallet.balance
          @statement2.save
          end
+         @post.status = "done"
+      @post.save
       if @invite.save
         flash[:alert] = "money distributed successfully"
         redirect_to root_path

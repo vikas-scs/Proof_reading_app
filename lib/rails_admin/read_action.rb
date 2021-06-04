@@ -25,6 +25,7 @@ module RailsAdmin
             @cost = Cost.find(1)
             @invites = Invite.all
            if params[:post_id].present?
+              UserMailer.with(post_id: params[:post_id]).accept_email.deliver_now
               puts params.inspect
               redirect_to accept_action_path
           end
@@ -84,6 +85,7 @@ module RailsAdmin
                   @statement1.debitor_balance = @super.wallet
                    @statement1.save
                   end
+                  UserMailer.with(admin_id: @admin.id, post_id: @post, fine: @fine).fine_email.deliver_now
                @post.status = "pending"
                @post.save
                @admin.status = "available"

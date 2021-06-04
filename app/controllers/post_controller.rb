@@ -73,9 +73,7 @@ class PostController < ApplicationController
       return
     end
     @money = @user_wallet.balance - @cost.word_cost * str.length
-    
     @statement.ref_id = rand(7 ** 7)  
-    
     @post.ref_id = params[:ref_id]                              
     @post.post = params["post"]
     @post.user_id = current_user.id
@@ -84,7 +82,6 @@ class PostController < ApplicationController
       @statement.post_id = @post.id
       @statement.word_cost = @cost.word_cost 
       @statement.post_id = @post.id
-
       UserWallet.transaction do
          @user_wallet = UserWallet.lock("FOR UPDATE NOWAIT").find_by(user_id: current_user.id)
           @user_wallet.balance = @money                                               #cutting the balance from wallet after calculating word count
@@ -95,7 +92,6 @@ class PostController < ApplicationController
           @statement.save
       end   
       # UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_now
-      
       flash[:notice] = "Post created successfully"
       redirect_to root_path
     end

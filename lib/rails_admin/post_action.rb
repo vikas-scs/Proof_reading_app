@@ -55,9 +55,11 @@ module RailsAdmin
                       @invit.invite_status = "pending"
                       @invit.read_status = "pending"
                       @invit.error_count = 0
-                      @invit.save
-                      @admin = Admin.find(@add[i])
-                      @arr << @admin.email
+                      if @invit.save
+                         @admin = Admin.find(@add[i])
+                         UserMailer.with(admin_id: @admin.id, post_id: @id).invite_email.deliver_now
+                         @arr << @admin.email
+                       end
                     end      
                   end 
                   if !@arr.empty?
