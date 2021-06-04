@@ -1,26 +1,32 @@
+<div class="container" style="border: auto">
+<center>
+<div class="btns-container">
 <% @invites.each do |invite| %>
   <% if invite.reciever_id == current_admin.id %>
     <% if invite.invite_status == "pending" %>
       <% @posts.each do |post| %>
          <% if post.id == invite.post_id %>
            <% if post.status == "pending" %>
-              <p>request from:</p>
-              post_id:<%= invite.post_id %>
+              <b><p>request from:</p></b>
+              <b>post_id:<%= invite.post_id %></b><br>
               <%= form_tag(invitation_action_path, :method => "get") do %> 
                 <%= hidden_field_tag :"is_status", "accepted" %>
                 <%= hidden_field_tag :"invite_id", invite.id %>
-                <%= submit_tag "accept" %>
-              <% end %>
+                <%= submit_tag "accept", class: "btn btn-success" %>
+              <% end %><br>
               <%= form_tag(invitation_action_path, :method => "get") do %> 
                  <%= hidden_field_tag :"post_id", invite.post_id %>
                 <%= hidden_field_tag :"host_id", invite.host_id %>
                 <%= hidden_field_tag :"is_status", "rejected" %>
                 <%= hidden_field_tag :"invite_id", invite.id %>
-              <%= submit_tag "reject" %>
-            <% end %>
+              <%= submit_tag "reject", class: "btn btn-danger"  %>
+            <% end %><br>
           <% end %>
         <% end %>
       <% end %>
     <% end %>
   <% end %>
 <% end %>
+</div>
+</center>
+</div>

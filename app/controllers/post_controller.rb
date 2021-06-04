@@ -11,7 +11,6 @@ class PostController < ApplicationController
   def show
     @cupons = Cupon.all
     @post = Post.find(params[:id])
-
     if @post.status == "done"
       puts params.inspect
       @post = Post.find(params[:id])
@@ -97,21 +96,32 @@ class PostController < ApplicationController
     end
   end
   def update
-     if Cupon.exists?(:coupon_name => params[:cupon_code])
+     @upper = params[:cupon_code].upcase 
+     @down = params[:cupon_code].downcase
+     if Cupon.exists?(:coupon_name => params[:cupon_code]) || Cupon.exists?(:coupon_name => @upper) || Cupon.exists?(:coupon_name => @down)
       @post = Post.find(params[:id])
-      @cupon = Cupon.where(coupon_name: params[:cupon_code])
+      if Cupon.exists?(:coupon_name => params[:cupon_code])
+        @cupon = Cupon.where(coupon_name: params[:cupon_code])
+      elsif Cupon.exists?(:coupon_name => @upper)
+        @cupon = Cupon.where(coupon_name: @upper)
+      elsif Cupon.exists?(:coupon_name => @down)
+        @cupon = Cupon.where(coupon_name: @down)
+      end
       @code = @cupon.ids
       puts @code
       @coupon = Cupon.find(@code.first)
         @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)
-        puts @cuponusers.length
+        puts @cuponusers.ids
+        puts "between"
+        puts @cuponusers.length - 1
         puts @coupon.usage_count
         if @coupon.expired_date < Date.today
             puts "date verified"
             flash[:alert] = "copon is already expired"
              redirect_to post_path(id: @post.id)
              return
-        elsif @cuponusers.length > @coupon.usage_count
+        elsif @cuponusers.length >= @coupon.usage_count
+             puts "its coming here"
              flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
              redirect_to post_path(id: @post.id)
              return

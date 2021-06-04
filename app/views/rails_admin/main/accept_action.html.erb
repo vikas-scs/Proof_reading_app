@@ -19,7 +19,7 @@
                 	<%= hidden_field_tag :"post_id", @post.id %>
                   <td><%= text_field_tag('corrected', nil, class: 'input-large') %></td>
                   <td><input type="" id="testtime"  name="time_taken"></td>
-                	<td><%= submit_tag("send to user") %></td>
+                	<td><button id="send_btn" onclick="send()"><% submit_tag("send to user") %>send</button></td>
                 	<% end %>
                 </tr>
             </table>
@@ -31,10 +31,11 @@
     const start_btn = document.querySelector('#start_btn');
     const pause_btn = document.querySelector('#pause_btn');
     const reset_btn = document.querySelector('#reset_btn');
+    const rsend_btn = document.querySelector('#send_btn');
     let Ecount = 0;
     let time = 0,
     interval;
-
+    var functionIsRunning = false;
      function showTime() {
        timer.innerHTML = toHHMMSS(time);
        
@@ -59,6 +60,9 @@
 }
 
 function reset() {
+   if (!functionIsRunning) {
+        functionIsRunning = true;
+    }
   time = time - 1
   $("#timeTaken").html(time+ " seconds");
   clearInterval(interval);
@@ -67,7 +71,7 @@ function reset() {
   pause_btn.innerHTML = 'PAUSE';
   document.getElementById("testtime").value = toHHMMSS(time);
   hideBtn([pause_btn, reset_btn]);
-  showBtn([start_btn]);
+  showBtn([start_btn , send_btn]);
 
 }
 
@@ -131,6 +135,10 @@ button:focus {
   display: none;
 }
 #reset_btn {
+  background: red;
+  display: none;
+}
+#send_btn {
   background: red;
   display: none;
 }

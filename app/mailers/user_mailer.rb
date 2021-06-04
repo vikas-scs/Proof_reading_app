@@ -13,7 +13,7 @@ class UserMailer < ApplicationMailer
    	@post = Post.find(params[:post_id])
     @admin = Admin.find(params[:admin_id])
     @fine = params[:fine]
-    mail(to: @admin.email, subject: 'fine for rejecting')
+    mail(to: @admin.email, subject: 'fine for rejecting invitation')
   end
   def accept_email
     @post = Post.find(params[:post_id])

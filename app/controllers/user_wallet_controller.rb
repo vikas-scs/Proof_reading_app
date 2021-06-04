@@ -164,7 +164,7 @@ class UserWalletController < ApplicationController
             flash[:alert] = "copon is already expired"
             redirect_to post_path(id: params[:post_id])
             return
-          elsif @cuponusers.length > @cupon.usage_count
+          elsif @cuponusers.length >= @cupon.usage_count
             puts "over usage"
             flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
             redirect_to post_path(id: params[:post_id])

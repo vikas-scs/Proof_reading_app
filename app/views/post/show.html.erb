@@ -88,7 +88,9 @@
      <%= cupon.coupon_name %>
    <% end %>
     <h1> proof reading is not yet done </h1>
-    <h4>saved coupon_id:</h4><%= @post.cupon_id %>
+    <% if @post.cupon_id.present? %>
+    <h4>saved coupon:</h4><%= @cupon.coupon_name %>
+    <% end %>
     <%= form_tag(update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code"%>
        <%= submit_tag "save coupon" %>
