@@ -91,9 +91,11 @@
     <% if @post.cupon_id.present? %>
     <h4>saved coupon:</h4><%= @cupon.coupon_name %>
     <% end %>
+    <% if !@post.cupon_id.present? %>
     <%= form_tag(update_path(id: @post.id), :method => "patch") do %>
        Cupon code:<%= text_field_tag :"cupon_code"%>
        <%= submit_tag "save coupon" %>
+  <% end %>
   <% end %>
 
 <% end %>

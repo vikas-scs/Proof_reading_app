@@ -126,7 +126,11 @@ class PostController < ApplicationController
              redirect_to post_path(id: @post.id)
              return
         else
+          @cu = CuponsUsers.new
+          @cu.user_id = current_user.id
+          @cu.cupon_id = @coupon.id
           @post.cupon_id = @coupon.id
+          @cu.save
           @post.cupon_date = Date.today
           if @post.save
            flash[:notice] = "Coupon saved successfully"
