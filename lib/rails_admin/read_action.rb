@@ -85,7 +85,7 @@ module RailsAdmin
                   @statement1.debitor_balance = @super.wallet
                    @statement1.save
                   end
-                  UserMailer.with(admin_id: @admin.id, post_id: @post, fine: @fine).fine_email.deliver_now
+                  UserMailer.with(admin_id: @admin.id, post_id: @post.id, fine: @fine).fine_email.deliver_now
                @post.status = "pending"
                @post.save
                @admin.status = "available"
