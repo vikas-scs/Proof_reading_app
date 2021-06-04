@@ -58,9 +58,7 @@ module RailsAdmin
                 @add = @adm.ids
                 if @adm.length != 0
                   for i in 0..@adm.length - 1
-                    if @add[i] == current_admin.id
-                      next
-                    elsif Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i])
+                    if Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i])
                       next
                     else
                       puts "its comming here"
