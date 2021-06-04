@@ -98,9 +98,6 @@ class UserWalletController < ApplicationController
                 if @offer > @cupon.amount
                   @offer = @cupon.amount
                 end
-                @cu = CuponsUsers.new
-                @cu.user_id = current_user.id
-                @cu.cupon_id = @cupon.id
                 @post.coupon_benifit = @offer
                 @post.cupon_id = @coupons.first
                 @total = @total - @offer
@@ -108,7 +105,6 @@ class UserWalletController < ApplicationController
                 @pf = @total - @percentage
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
-                @cu.save
               elsif !@cupon.amount.present?              #if the amount is not present in coupon table
                 puts "amount not present"
                 @offer = (@total * @cupon.percentage) / 100
@@ -136,9 +132,6 @@ class UserWalletController < ApplicationController
                    @cu.save
                 else
                    @offer = @total - @cupon.amount
-                   @cu = CuponsUsers.new
-                   @cu.user_id = current_user.id
-                   @cu.cupon_id = @cupon.id
                    @post.coupon_benifit = @offer
                    @post.cupon_id = @coupons.first
                    @total = @total - @offer
@@ -146,7 +139,6 @@ class UserWalletController < ApplicationController
                    @pf = @total - @percentage
                    @extra = @user_wallet.lock_balance - @total
                    @cupon.save
-                   @cu.save
                 end
               end    
             elsif @cupon.expired_date < Date.today            #if coupon applied that after proof read, checking its expiry date
