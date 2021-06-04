@@ -92,7 +92,7 @@ class PostController < ApplicationController
           @user_wallet.lock_balance = @cost.word_cost * str.length
           @user_wallet.save! 
           @statement.amount = @user_wallet.lock_balance  
-          @statement.debitor_balance = @user_wallet.balance                 #locking the balance of getting from word count
+          @statement.debitor_balance = @user_wallet.balance.round(2)                 #locking the balance of getting from word count
           @statement.save
       end   
       # UserMailer.with(user_id: current_user.id, post_id:@post.id).welcome_email.deliver_now
@@ -106,14 +106,12 @@ class PostController < ApplicationController
      if Cupon.exists?(:coupon_name => params[:cupon_code]) || Cupon.exists?(:coupon_name => @upper) || Cupon.exists?(:coupon_name => @down)
       @post = Post.find(params[:id])
       if Cupon.exists?(:coupon_name => params[:cupon_code])          #getting the input cupon based on the satishfiyiing condition
-        @cupon = Cupon.where(coupon_name: params[:cupon_code])
+        @coupon = Cupon.where(coupon_name: params[:cupon_code]).first
       elsif Cupon.exists?(:coupon_name => @upper)
-        @cupon = Cupon.where(coupon_name: @upper)
+        @coupon = Cupon.where(coupon_name: @upper).first
       elsif Cupon.exists?(:coupon_name => @down)
-        @cupon = Cupon.where(coupon_name: @down)
+        @coupon = Cupon.where(coupon_name: @down).first
       end
-      @code = @cupon.ids
-      @coupon = Cupon.find(@code.first)
         @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)           #getting the coupon usage of the user if it usage count exceeds
         if @coupon.expired_date < Date.today                        #checking the expire date of the coupon
             flash[:alert] = "copon is already expired"

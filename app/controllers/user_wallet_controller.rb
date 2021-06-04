@@ -81,11 +81,17 @@ class UserWalletController < ApplicationController
       puts @invite.error_count
       puts @total
       if params[:cupon_code].present?                              #checking whether the coupon is applied or not
-        if Cupon.exists?(:coupon_name => params[:cupon_code])       #checking whther the coupon exist or not 
-          @copon = Cupon.where(coupon_name: params[:cupon_code])
-          puts @copon
-          @coupons = @copon.ids
-          @cupon = Cupon.find(@coupons.first)
+        @upper = params[:cupon_code].upcase                           #getting both upper and down case of input for checking that coupon is exist or not
+        @down = params[:cupon_code].downcase
+        if Cupon.exists?(:coupon_name => params[:cupon_code]) || Cupon.exists?(:coupon_name => @upper) || Cupon.exists?(:coupon_name => @down)
+               @post = Post.find(params[:id])
+            if Cupon.exists?(:coupon_name => params[:cupon_code])          #getting the input cupon based on the satishfiyiing condition
+               @cupon = Cupon.where(coupon_name: params[:cupon_code]).first
+            elsif Cupon.exists?(:coupon_name => @upper)
+              @cupon = Cupon.where(coupon_name: @upper).first
+            elsif Cupon.exists?(:coupon_name => @down)
+               @cupon = Cupon.where(coupon_name: @down).first
+            end      #checking whther the coupon exist or not 
           @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @cupon.id)
           puts "coooooooo"
           puts @cuponusers.length
@@ -100,7 +106,7 @@ class UserWalletController < ApplicationController
                   @offer = @cupon.amount
                 end
                 @post.coupon_benifit = @offer
-                @post.cupon_id = @coupons.first
+                @post.cupon_id = @cupon.id
                 @total = @total - @offer
                 @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
@@ -110,7 +116,7 @@ class UserWalletController < ApplicationController
                 puts "amount not present"
                 @offer = (@total * @cupon.percentage) / 100
                 @post.coupon_benifit = @offer
-                @post.cupon_id = @coupons.first
+                @post.cupon_id = @cupon.id
                 @total = @total - @offer
                 @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
@@ -125,7 +131,7 @@ class UserWalletController < ApplicationController
                    @cu.user_id = current_user.id
                    @cu.cupon_id = @cupon.id
                    @post.coupon_benifit = @offer
-                   @post.cupon_id = @coupons.first
+                   @post.cupon_id = @cupon.id
                    @percentage = 0
                    @pf = 0
                    @extra = @user_wallet.lock_balance
@@ -134,7 +140,7 @@ class UserWalletController < ApplicationController
                 else
                    @offer = @total - @cupon.amount
                    @post.coupon_benifit = @offer
-                   @post.cupon_id = @coupons.first
+                   @post.cupon_id = @cupon.first
                    @total = @total - @offer
                    @percentage = (@total * @costs.admin_commission) / 100
                    @pf = @total - @percentage
@@ -159,6 +165,7 @@ class UserWalletController < ApplicationController
             redirect_to post_path(id: params[:post_id])
             return
           else          #if the coupon applied at accept the proofread is completed
+            
               if @cupon.percentage.present? && @cupon.amount.present?                      #checking whether amount and percentage are available in table
                 puts "both present"
                 puts "no"
@@ -170,7 +177,7 @@ class UserWalletController < ApplicationController
                 @cu.user_id = current_user.id
                 @cu.cupon_id = @cupon.id
                 @post.coupon_benifit = @offer
-                @post.cupon_id = @coupons.first
+                @post.cupon_id = @cupon.id
                 @total = @total - @offer
                 @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
@@ -186,7 +193,7 @@ class UserWalletController < ApplicationController
                 @cu.user_id = current_user.id
                 @cu.cupon_id = @cupon.id
                 @post.coupon_benifit = @offer
-                @post.cupon_id = @coupons.first
+                @post.cupon_id = @cupon.id
                 @total = @total - @offer
                 puts @total 
                 puts "here"
@@ -256,7 +263,7 @@ class UserWalletController < ApplicationController
           @admin.wallet = @admin_wallet
           @admin.save!
           
-          @statement.debitor_balance = @admin.wallet
+          @statement.debitor_balance = @admin.wallet.round(2)
           
           @statement.save  
        end
@@ -281,7 +288,7 @@ class UserWalletController < ApplicationController
         @proofread = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @proofread.email)
          @proofread.wallet = @proof
          @proofread.save!
-         @statement1.debitor_balance = @proofread.wallet
+         @statement1.debitor_balance = @proofread.wallet.round(2)
          @statement1.save
        end
         
@@ -300,7 +307,7 @@ class UserWalletController < ApplicationController
         @user_wallet = UserWallet.lock("FOR UPDATE NOWAIT").find_by(user_id: current_user.id)
          @user_wallet.balance = @admin_refund 
          @user_wallet.save!
-         @statement2.debitor_balance = @user_wallet.balance
+         @statement2.debitor_balance = @user_wallet.balance.round(2)
          @statement2.save
          end
          @post.status = "done"

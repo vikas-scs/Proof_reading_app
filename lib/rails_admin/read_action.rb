@@ -24,12 +24,12 @@ module RailsAdmin
             @posts = Post.all
             @cost = Cost.find(1)
             @invites = Invite.all
-           if params[:post_id].present?
+           if params[:post_id].present?                #if user start read the post divirting to read page
               UserMailer.with(post_id: params[:post_id]).accept_email.deliver_now
               puts params.inspect
               redirect_to accept_action_path
           end
-          if params[:is_status].present?
+          if params[:is_status].present?                #proofreader reject the post after acccepting
             @invite = Invite.find(params[:invite_id])
             @post = Post.find(@invite.post_id)
             @user = User.find(@post.user_id)
@@ -41,7 +41,7 @@ module RailsAdmin
             @admin = Admin.find(@invite.reciever_id)
             if @fine < @admin.wallet
               puts @admin.wallet
-              @statement = Statement.new
+              @statement = Statement.new                      #creating the statement for fined amount
               @statement.debit_from = @admin.email
               @statement.statement_type = "credit"
               @statement.action = "fined by rejecting invitation"
@@ -64,10 +64,10 @@ module RailsAdmin
                   @wall = @admin.wallet - @fine
                   @admin.wallet = @wall
                   @admin.save!
-                  @statement.debitor_balance = @admin.wallet
+                  @statement.debitor_balance = @admin.wallet.round(2)
                   @statement.save
                 end
-               @statement1 = Statement.new
+               @statement1 = Statement.new                           #creating the statenent for adding rejected money to super_admin
                @statement1.debit_from = @admin.email
                @statement1.statement_type = "debit"
                @statement1.action = "getting fine from rejecting invitation"
@@ -82,7 +82,7 @@ module RailsAdmin
                   @super = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @super.email)
                   @super.wallet = @super_add
                   @super.save!
-                  @statement1.debitor_balance = @super.wallet
+                  @statement1.debitor_balance = @super.wallet.round(2)
                    @statement1.save
                   end
                   UserMailer.with(admin_id: @admin.id, post_id: @post.id, fine: @fine).fine_email.deliver_now

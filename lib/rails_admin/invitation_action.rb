@@ -29,14 +29,14 @@ module RailsAdmin
               
               @admin = Admin.find(current_admin.id)
               
-              if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :invite_status => "accepted")
+              if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :invite_status => "accepted")   #checking whether the post accepted by anthor one
                 @invite.invite_status = "reject"
                 @invite.save
                 puts "rihftttttttt"
                 flash[:error] = "invitation accepted by another proofreader"
                 redirect_to index_path
-              else
-                @invite.invite_status = params[:is_status]
+              else                              
+                @invite.invite_status = params[:is_status]           #if the proofreader accepts the request save the record
                 @invite.save
                 if @invite.invite_status == "accepted"
                 @admin.status = "available"
@@ -48,15 +48,15 @@ module RailsAdmin
                   redirect_to index_path
                  end
                 end
-              end
-              if @invite.invite_status == "rejected"
+              end 
+              if @invite.invite_status == "rejected"                 #if proofreader rejecting the invitation
                 @invite.invite_status = "reject"
                 @invite.save
                 puts "hello"
                 puts current_admin.id
                 @adm = Admin.where(status: "available", role: "proof_reader")
                 @add = @adm.ids
-                if @adm.length != 0
+                if @adm.length != 0                            #sending request to the available proofreaders
                   for i in 0..@adm.length - 1
                     if Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i])
                       next
@@ -71,12 +71,12 @@ module RailsAdmin
                       @invit.error_count = 0
                       @invit.save
                     end
-                  end
+                  end                          #if invitation are suucessfully diverted
                   if @invite.save
                     flash[:success] = "invitation divirted successfully"
                     redirect_to index_path
                   end
-                else
+                else                      #if all proofreader  are busy
                   flash[:success] = "rejected and all proof readers are busy"
                   redirect_to index_path
                 end  
