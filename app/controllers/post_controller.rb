@@ -5,8 +5,8 @@ class PostController < ApplicationController
       end
     end
   def new
-    @post = Post.new 
-    @cost = Cost.find(1)
+    @post = Post.new                                  #creating a new post 
+    @cost = Cost.find(1)                              #getting wo
   end
   def show
     @cupons = Cupon.all
@@ -17,7 +17,7 @@ class PostController < ApplicationController
       if @post.cupon_id.present?
        @cupon = Cupon.find(@post.cupon_id)
      end
-     @state = Statement.where(post_id: @post.id, action: "distributing money for proofread")
+     @state = Statement.where(post_id: @post.id, action: "distributing money for proofread")       #checking statements using post_id
        @statement = @state.ids
     puts @statement
     @statement1 = Statement.find(@statement.first)
@@ -54,10 +54,15 @@ class PostController < ApplicationController
      @post = Post.find(params[:id])
   end
   def create
-    @user_wallet = UserWallet.find(current_user.id)
+    if params[:post] == ""
+      flash[:notice] = "post can't be empty"                #dispalaying error message if fund are less
+      redirect_to new_post_path
+      return
+    end
+    @user_wallet = UserWallet.find(current_user.id)                      #getting the userwallet in at instance
     @cost = Cost.find(1)
     @post = Post.new(post_params)
-    @statement = Statement.new
+    @statement = Statement.new                                     #create a statement when the locking the amount for post
     @statement.statement_type = "debit"
     @statement.action = "locking amount for post"
     @statement.user_id = current_user.id
@@ -96,11 +101,11 @@ class PostController < ApplicationController
     end
   end
   def update
-     @upper = params[:cupon_code].upcase 
+     @upper = params[:cupon_code].upcase                           #getting both upper and down case of input for checking that coupon is exist or not
      @down = params[:cupon_code].downcase
      if Cupon.exists?(:coupon_name => params[:cupon_code]) || Cupon.exists?(:coupon_name => @upper) || Cupon.exists?(:coupon_name => @down)
       @post = Post.find(params[:id])
-      if Cupon.exists?(:coupon_name => params[:cupon_code])
+      if Cupon.exists?(:coupon_name => params[:cupon_code])          #getting the input cupon based on the satishfiyiing condition
         @cupon = Cupon.where(coupon_name: params[:cupon_code])
       elsif Cupon.exists?(:coupon_name => @upper)
         @cupon = Cupon.where(coupon_name: @upper)
@@ -108,25 +113,19 @@ class PostController < ApplicationController
         @cupon = Cupon.where(coupon_name: @down)
       end
       @code = @cupon.ids
-      puts @code
       @coupon = Cupon.find(@code.first)
-        @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)
-        puts @cuponusers.ids
-        puts "between"
-        puts @cuponusers.length - 1
-        puts @coupon.usage_count
-        if @coupon.expired_date < Date.today
-            puts "date verified"
+        @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)           #getting the coupon usage of the user if it usage count exceeds
+        if @coupon.expired_date < Date.today                        #checking the expire date of the coupon
             flash[:alert] = "copon is already expired"
              redirect_to post_path(id: @post.id)
              return
-        elsif @cuponusers.length >= @coupon.usage_count
+        elsif @cuponusers.length >= @coupon.usage_count                 #checking whether the usage count of the coupon execeeds
              puts "its coming here"
              flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
              redirect_to post_path(id: @post.id)
              return
         else
-          @cu = CuponsUsers.new
+          @cu = CuponsUsers.new                          #adding the coupon and user details in coupon users table
           @cu.user_id = current_user.id
           @cu.cupon_id = @coupon.id
           @post.cupon_id = @coupon.id
@@ -138,7 +137,7 @@ class PostController < ApplicationController
           end
         end
       else
-          flash[:notice] = "invalid coupon"
+          flash[:notice] = "invalid coupon"                    #displaying invalid coupon if the coupon doesn't exist in coupon table
           redirect_to post_path(id: params[:id])
         end
   end

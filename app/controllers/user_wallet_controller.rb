@@ -78,6 +78,7 @@ class UserWalletController < ApplicationController
       puts @invite.reciever_id
       puts "check"
       @total = word_cost * @invite.error_count
+      puts @invite.error_count
       puts @total
       if params[:cupon_code].present?                              #checking whether the coupon is applied or not
         if Cupon.exists?(:coupon_name => params[:cupon_code])       #checking whther the coupon exist or not 
