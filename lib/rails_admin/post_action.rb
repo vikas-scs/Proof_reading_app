@@ -40,11 +40,7 @@ module RailsAdmin
                 puts @add
                 if @admin.length != 0
                   for i in 0..@admin.length - 1
-                    if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "reject")
-                      puts "hellooooooooooo"
-                      next
-                    elsif Invite.exists?(:post_id => @post.id,:reciever_id => @add[i], :invite_status => "pending")
-                      puts "hellooooooooooo"
+                    if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i])
                       next
                     else
                       puts "its comming here"
