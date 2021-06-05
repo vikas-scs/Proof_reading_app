@@ -72,8 +72,8 @@ class UserWalletController < ApplicationController
       if params[:cupon_code].present?                              #checking whether the coupon is applied or not
         @upper = params[:cupon_code].upcase                           #getting both upper and down case of input for checking that coupon is exist or not
         @down = params[:cupon_code].downcase
-         @cupon = Cupon.where(coupon_name: params[:cupon_code],:coupon_name => @upper,:coupon_name => @down).first
-        if @cupon.present? 
+         @cupon = Cupon.where('lower(coupon_name) = ?', params[:cupon_code].downcase).first
+         if @cupon.present?
             @post = Post.find(params[:id])   #checking whther the coupon exist or not 
           @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @cupon.id)
           if @post.cupon_date.present?                             #checking whether the coupon was pre-saved after creating the post 

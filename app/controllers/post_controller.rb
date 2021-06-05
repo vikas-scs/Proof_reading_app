@@ -15,7 +15,7 @@ class PostController < ApplicationController
       @post = Post.find(params[:id])
       if @post.cupon_id.present?
        @cupon = Cupon.find(@post.cupon_id)
-     end
+     end    
     @statement1 = Statement.where(post_id: @post.id, action: "distributing money for proofread").first
     @statement2 = Statement.where(post_id: @post.id, action: "distributing money for proofread").second
     @invite = Invite.where(post_id: @post.id).first
@@ -87,11 +87,10 @@ class PostController < ApplicationController
     end
   end
   def update
-     @upper = params[:cupon_code].upcase                           #getting both upper and down case of input for checking that coupon is exist or not
-     @down = params[:cupon_code].downcase
-     @coupon = Cupon.where(coupon_name: params[:cupon_code],:coupon_name => @upper,:coupon_name => @down).first
+     @coupon = Cupon.where('lower(coupon_name) = ?', params[:cupon_code].downcase).first
      if @coupon.present?
-        @post = Post.find(params[:id])         #getting the input cupon based on the satishfiyiing condition
+        @post = Post.find(params[:id]) 
+        puts @coupon.id       #getting the input cupon based on the satishfiyiing condition
         @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)           #getting the coupon usage of the user if it usage count exceeds
         if @coupon.expired_date < Date.today                        #checking the expire date of the coupon
             flash[:alert] = "copon is already expired"
