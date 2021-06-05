@@ -208,6 +208,7 @@ class UserWalletController < ApplicationController
          @user_wallet.lock_balance = 0
          @percentage = (@total * @costs.admin_commission) / 100
          @pf = @total - @percentage
+         @post.coupon_benifit = 0
       end
       @proofread = Admin.find(@invite.reciever_id)
       @admin_wallet = @admin.wallet + @percentage

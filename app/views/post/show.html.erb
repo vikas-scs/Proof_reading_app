@@ -77,7 +77,7 @@
         <td>proof reading for post</td>
        <td><%= current_user.email %></td>
        <td><%= @cupon.coupon_name rescue '-' %></td>
-      <td><%= @post.coupon_benifit %></td>
+      <td><%= @post.coupon_benifit rescue '-' %></td>
        <td><%= @statement1.amount + @statement2.amount %>
       </tr>
    </table> 
