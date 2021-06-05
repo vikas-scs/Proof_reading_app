@@ -7,7 +7,6 @@ class UserWalletController < ApplicationController
     @wallet = UserWallet.find(params[:id])
   end
   def edit
-  	   puts "helooooooo"
        @wallet = UserWallet.find(params[:id])
   end
   def show
@@ -45,7 +44,6 @@ class UserWalletController < ApplicationController
       end
     respond_to do |format|
       if @wallet.save
-
         format.html { redirect_to wallets_path, notice: "money was added successfully." }
         format.json { render :show, status: :created, location: @post }
       else
@@ -58,49 +56,29 @@ class UserWalletController < ApplicationController
       @statement = Statement.new                          #creating a new statement for distributing money after proofreading
       @post = Post.find(params[:id].to_i)
       @user = User.find(@post.user_id)
-      @costs = Statement.where(action: "locking amount for post", post_id: @post.id)
-      @cos = @costs.ids
-      @state = Statement.find(@cos.first)
+      @state = Statement.where(action: "locking amount for post", post_id: @post.id).first
       word_cost = @state.word_cost
       @costs = Cost.find(1)
-      puts params.inspect
-      @pf = 0
       @statement.statement_type = "credit"
       @statement.action = "distributing money for proofread"
       @statement.user_id = current_user.id
       @statement.post_id = @post.id
       @statement.ref_id = rand(7 ** 7)
-      puts current_user.id
       @user_wallet = UserWallet.find(current_user.id)
       @invite = Invite.find(params[:invite_id])
       @admin = Admin.find(@invite.host_id)
       @statement.admin_id = @admin.id
-      puts @invite.reciever_id
-      puts "check"
       @total = word_cost * @invite.error_count
-      puts @invite.error_count
-      puts @total
       if params[:cupon_code].present?                              #checking whether the coupon is applied or not
         @upper = params[:cupon_code].upcase                           #getting both upper and down case of input for checking that coupon is exist or not
         @down = params[:cupon_code].downcase
-        if Cupon.exists?(:coupon_name => params[:cupon_code]) || Cupon.exists?(:coupon_name => @upper) || Cupon.exists?(:coupon_name => @down)
-               @post = Post.find(params[:id])
-            if Cupon.exists?(:coupon_name => params[:cupon_code])          #getting the input cupon based on the satishfiyiing condition
-               @cupon = Cupon.where(coupon_name: params[:cupon_code]).first
-            elsif Cupon.exists?(:coupon_name => @upper)
-              @cupon = Cupon.where(coupon_name: @upper).first
-            elsif Cupon.exists?(:coupon_name => @down)
-               @cupon = Cupon.where(coupon_name: @down).first
-            end      #checking whther the coupon exist or not 
+         @cupon = Cupon.where(coupon_name: params[:cupon_code],:coupon_name => @upper,:coupon_name => @down).first
+        if @cupon.present? 
+            @post = Post.find(params[:id])   #checking whther the coupon exist or not 
           @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @cupon.id)
-          puts "coooooooo"
-          puts @cuponusers.length
-          puts @cupon.usage_count
           if @post.cupon_date.present?                             #checking whether the coupon was pre-saved after creating the post 
             if @post.cupon_date <=  Date.today
               if @cupon.percentage.present? && @cupon.amount.present?     #checking whether amount and percentage are available in table
-                puts "both present"
-                puts "yes"
                 @offer = (@total * @cupon.percentage) / 100
                 if @offer > @cupon.amount
                   @offer = @cupon.amount
@@ -113,7 +91,6 @@ class UserWalletController < ApplicationController
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
               elsif !@cupon.amount.present?              #if the amount is not present in coupon table
-                puts "amount not present"
                 @offer = (@total * @cupon.percentage) / 100
                 @post.coupon_benifit = @offer
                 @post.cupon_id = @cupon.id
@@ -123,7 +100,6 @@ class UserWalletController < ApplicationController
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
               elsif !@cupon.percentage.present?                   #if the percentage is not available in coupon table
-                puts "percentage not present"
                 if @cupon.amount > @total
                    @offer = @total
                    @total = 0
@@ -149,26 +125,21 @@ class UserWalletController < ApplicationController
                 end
               end    
             elsif @cupon.expired_date < Date.today            #if coupon applied that after proof read, checking its expiry date
-              puts "date verified"
               flash[:alert] = "copon is already expired"
               redirect_to post_path(id: params[:post_id])
               return
             end
           elsif @cupon.expired_date < Date.today       #if coupon applied that after proof read, checking its expiry date   
-            puts "date verified"
             flash[:alert] = "copon is already expired"
             redirect_to post_path(id: params[:post_id])
             return
           elsif @cuponusers.length >= @cupon.usage_count      #checking that usage count for user to use coupon for a post
-            puts "over usage"
             flash[:alert] = "maximum usage for coupon to user is over please try another coupon"
             redirect_to post_path(id: params[:post_id])
             return
           else          #if the coupon applied at accept the proofread is completed
             
               if @cupon.percentage.present? && @cupon.amount.present?                      #checking whether amount and percentage are available in table
-                puts "both present"
-                puts "no"
                 @offer = (@total * @cupon.percentage) / 100
                 if @offer > @cupon.amount
                   @offer = @cupon.amount
@@ -181,13 +152,10 @@ class UserWalletController < ApplicationController
                 @total = @total - @offer
                 @percentage = (@total * @costs.admin_commission) / 100
                 @pf = @total - @percentage
-                puts @pf
-                puts "above"
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
                 @cu.save
               elsif !@cupon.amount.present?                              #if the amount is not present in coupon table
-                puts "percentage not present"
                 @offer = (@total * @cupon.percentage) / 100
                 @cu = CuponsUsers.new
                 @cu.user_id = current_user.id
@@ -195,16 +163,12 @@ class UserWalletController < ApplicationController
                 @post.coupon_benifit = @offer
                 @post.cupon_id = @cupon.id
                 @total = @total - @offer
-                puts @total 
-                puts "here"
                 @percentage = (@total * @costs.admin_commission) / 100
-                puts @percentage
                 @pf = @total - @percentage
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
                 @cu.save
               elsif !@cupon.percentage.present?                           #if the percentage is not available in coupon table
-                puts "amount not present"
                 if @cupon.amount > @total
                    @offer = @total
                    @total = 0
@@ -235,17 +199,14 @@ class UserWalletController < ApplicationController
               end    
             end
         elsif !Cupon.exists?(:coupon_name => params[:cupon_code])           #if the entered coupon is invalid
-           puts "coming here"
            flash[:alert] = "invalid coupon"
             redirect_to post_path(id: params[:post_id])
             return
         end
       else                                                          #accpting the proofread without applying coupon
-         @extra = @user_wallet.lock_balance - @total 
-         puts "willl not come here" 
+         @extra = @user_wallet.lock_balance - @total  
          @user_wallet.lock_balance = 0
          @percentage = (@total * @costs.admin_commission) / 100
-         puts @percentage
          @pf = @total - @percentage
       end
       @proofread = Admin.find(@invite.reciever_id)
@@ -254,31 +215,23 @@ class UserWalletController < ApplicationController
       @statement.invite_id = @invite.id
       @statement.credit_to = @admin.email
       @statement.amount = @percentage
-      puts @proofread.wallet
-      puts @pf
       @proof = @pf + @proofread.wallet 
-      
        Admin.transaction do
         @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
           @admin.wallet = @admin_wallet
           @admin.save!
-          
           @statement.debitor_balance = @admin.wallet.round(2)
-          
           @statement.save  
        end
-    
       @admin_refund = @user_wallet.balance + @extra
       @invite.invite_status = "done"
       @proofread.status = "available"
-      
-      
       @statement1 = Statement.new                              #creating a new statement for distributing money after proofreading    
       @statement1.statement_type = "credit"
       @statement1.action = "distributing money for proofread"
       @statement1.user_id = current_user.id
       @statement1.post_id = @post.id
-       @statement1.ref_id = rand(7 ** 7)
+      @statement1.ref_id = rand(7 ** 7)
       @statement1.invite_id = @invite.id
       @statement1.debit_from = @user.email
       @statement1.credit_to = @proofread.email
@@ -291,7 +244,6 @@ class UserWalletController < ApplicationController
          @statement1.debitor_balance = @proofread.wallet.round(2)
          @statement1.save
        end
-        
        @statement2 = Statement.new                 #creating a statemet for refunding money to admin
        @statement2.statement_type = "credit"
       @statement2.action = "refund_amount"

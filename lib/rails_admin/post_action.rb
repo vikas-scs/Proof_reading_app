@@ -22,28 +22,22 @@ module RailsAdmin
         register_instance_option :controller do
           Proc.new do
             if params[:id].present?
-            puts params.inspect
             @id = params[:id]
-            puts @id
             @post = Post.find(@id)
             if @post.status == "pending" 
               @arr = Array.new
-              @arr.clear
-              puts "coming here"
+              @arr.clear                      #the post is already accepted by other one 
               if Invite.exists?(:post_id => @post.id, :invite_status => "accepted")
-                puts "yessssssssss"
                  flash[:error] = "this post is already accepted by other"
                  redirect_to index_path
               else
                 @admin = Admin.where(status: "available", role: "proof_reader")
                 @add = @admin.ids
-                puts @add
-                if @admin.length != 0
+                if @admin.length != 0               #sending the requests if proofreaders are available
                   for i in 0..@admin.length - 1
                     if Invite.exists?(:post_id => @post.id,:reciever_id => @add[i])
                       next
                     else
-                      puts "its comming here"
                       @invit = Invite.new
                       @invit.post_id = @id
                       @invit.host_id = current_admin.id

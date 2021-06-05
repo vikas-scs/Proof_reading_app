@@ -24,15 +24,11 @@ module RailsAdmin
             @invites = Invite.all
             @posts =Post.all
            if params[:invite_id].present?
-              puts "helloooooooooo"
               @invite = Invite.find(params[:invite_id].to_i)
-              
               @admin = Admin.find(current_admin.id)
-              
               if Invite.exists?(:host_id => @invite.host_id,:post_id => @invite.post_id, :invite_status => "accepted")   #checking whether the post accepted by anthor one
                 @invite.invite_status = "reject"
                 @invite.save
-                puts "rihftttttttt"
                 flash[:error] = "invitation accepted by another proofreader"
                 redirect_to index_path
               else                              
@@ -52,8 +48,6 @@ module RailsAdmin
               if @invite.invite_status == "rejected"                 #if proofreader rejecting the invitation
                 @invite.invite_status = "reject"
                 @invite.save
-                puts "hello"
-                puts current_admin.id
                 @adm = Admin.where(status: "available", role: "proof_reader")
                 @add = @adm.ids
                 if @adm.length != 0                            #sending request to the available proofreaders
@@ -61,7 +55,6 @@ module RailsAdmin
                     if Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i])
                       next
                     else
-                      puts "its comming here"
                       @invit = Invite.new
                       @invit.post_id = params[:post_id].to_i
                       @invit.host_id = params[:host_id].to_i

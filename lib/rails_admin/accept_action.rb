@@ -19,12 +19,10 @@ module RailsAdmin
         register_instance_option :controller do
           Proc.new do
             
-            if !params[:corrected].present?
+            if !params[:corrected].present?                         
                @post = Post.find(params[:post_id])
                @invite_id = params[:invite_id]
             else
-              puts "helloooo"
-              puts params.inspect
                @invite = Invite.find(params[:invite_id])
                @post = Post.find(@invite.post_id)
                @invite.read_status = params[:corrected]

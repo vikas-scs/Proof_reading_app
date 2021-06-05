@@ -12,32 +12,20 @@ class PostController < ApplicationController
     @cupons = Cupon.all
     @post = Post.find(params[:id])
     if @post.status == "done"
-      puts params.inspect
       @post = Post.find(params[:id])
       if @post.cupon_id.present?
        @cupon = Cupon.find(@post.cupon_id)
      end
-     @state = Statement.where(post_id: @post.id, action: "distributing money for proofread")       #checking statements using post_id
-       @statement = @state.ids
-    puts @statement
-    @statement1 = Statement.find(@statement.first)
-    puts @statement1.amount
-    @statement2 = Statement.find(@statement.second)
-    puts @statement2.amount
-    @invites = Invite.where(post_id: @post.id)
-    @invit = @invites.ids
-    @invite = Invite.find(@invit.first)
+    @statement1 = Statement.where(post_id: @post.id, action: "distributing money for proofread").first
+    @statement2 = Statement.where(post_id: @post.id, action: "distributing money for proofread").second
+    @invite = Invite.where(post_id: @post.id).first
     @admin = Admin.find(@invite.reciever_id)
-    puts @post.post
   end
   if @post.cupon_id.present?
    @cupon = Cupon.find(@post.cupon_id)
   end
     if Invite.exists?(post_id: params[:id], invite_status: "accept")                        #checking whether post is exist in invitations
-      @invi = Invite.where(post_id: params[:id], invite_status: "accept")
-      @idd = @invi.ids
-         @invite = Invite.find(@idd.first)                             #getting invitation id from post status
-        puts @invite.invite_status    
+         @invite = Invite.where(post_id: params[:id], invite_status: "accept").first                             #getting invitation id from post status    
       end
      respond_to do |format|
       format.html
@@ -68,8 +56,6 @@ class PostController < ApplicationController
     @statement.user_id = current_user.id
     @statement.debit_from = current_user.email
     @statement.credit_to = current_user.email
-    
-    puts "heloooooooo"
     str = params[:post].split(" ")                                            #getting each word in a sentense for cost of word 
     if @user_wallet.balance < @cost.word_cost * str.length
       flash[:notice] = "Insufficient balance please add money"                #dispalaying error message if fund are less
@@ -103,15 +89,9 @@ class PostController < ApplicationController
   def update
      @upper = params[:cupon_code].upcase                           #getting both upper and down case of input for checking that coupon is exist or not
      @down = params[:cupon_code].downcase
-     if Cupon.exists?(:coupon_name => params[:cupon_code]) || Cupon.exists?(:coupon_name => @upper) || Cupon.exists?(:coupon_name => @down)
-      @post = Post.find(params[:id])
-      if Cupon.exists?(:coupon_name => params[:cupon_code])          #getting the input cupon based on the satishfiyiing condition
-        @coupon = Cupon.where(coupon_name: params[:cupon_code]).first
-      elsif Cupon.exists?(:coupon_name => @upper)
-        @coupon = Cupon.where(coupon_name: @upper).first
-      elsif Cupon.exists?(:coupon_name => @down)
-        @coupon = Cupon.where(coupon_name: @down).first
-      end
+     @coupon = Cupon.where(coupon_name: params[:cupon_code],:coupon_name => @upper,:coupon_name => @down).first
+     if @coupon.present?
+        @post = Post.find(params[:id])         #getting the input cupon based on the satishfiyiing condition
         @cuponusers = CuponsUsers.where(user_id: current_user.id , cupon_id: @coupon.id)           #getting the coupon usage of the user if it usage count exceeds
         if @coupon.expired_date < Date.today                        #checking the expire date of the coupon
             flash[:alert] = "copon is already expired"

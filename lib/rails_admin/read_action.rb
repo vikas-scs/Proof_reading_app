@@ -26,7 +26,6 @@ module RailsAdmin
             @invites = Invite.all
            if params[:post_id].present?                #if user start read the post divirting to read page
               UserMailer.with(post_id: params[:post_id]).accept_email.deliver_now
-              puts params.inspect
               redirect_to accept_action_path
           end
           if params[:is_status].present?                #proofreader reject the post after acccepting
@@ -34,31 +33,21 @@ module RailsAdmin
             @post = Post.find(@invite.post_id)
             @user = User.find(@post.user_id)
             @user_wallet = UserWallet.find(@user.user_wallet.id)
-            puts @user_wallet.lock_balance
-            puts @cost.fine_amount
             @fine = (@user_wallet.lock_balance * @cost.fine_amount) / 100
-            puts @fine
             @admin = Admin.find(@invite.reciever_id)
             if @fine < @admin.wallet
-              puts @admin.wallet
               @statement = Statement.new                      #creating the statement for fined amount
               @statement.debit_from = @admin.email
               @statement.statement_type = "credit"
               @statement.action = "fined by rejecting invitation"
                @statement.ref_id = "rej#{rand(9 ** 9)}"
                @super = Admin.find(@invite.host_id)
-               
-
                @statement.post_id = @post.id
                @statement.user_id = @user.id
-               @statement.admin_id = @admin.id
-               
-               puts @statement.debit_from 
+               @statement.admin_id = @admin.id 
                @statement.credit_to = @super.email
-               puts "super_admin_email#{@super.email}"
                @super_add = @super.wallet + @fine
                @statement.amount = @fine
-               
                Admin.transaction do
                 @admin = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @admin.email)
                   @wall = @admin.wallet - @fine
@@ -77,7 +66,6 @@ module RailsAdmin
                 @statement1.admin_id = @super.id 
                @statement1.amount = @fine
                @statement1.credit_to = @super.email
-               
                Admin.transaction do 
                   @super = Admin.lock("FOR UPDATE NOWAIT").find_by(email: @super.email)
                   @super.wallet = @super_add
@@ -85,25 +73,19 @@ module RailsAdmin
                   @statement1.debitor_balance = @super.wallet.round(2)
                    @statement1.save
                   end
-                  UserMailer.with(admin_id: @admin.id, post_id: @post.id, fine: @fine).fine_email.deliver_now
+                UserMailer.with(admin_id: @admin.id, post_id: @post.id, fine: @fine).fine_email.deliver_now
                @post.status = "pending"
                @post.save
                @admin.status = "available"
                @invite.invite_status = "reject"
-               puts "comiiiiiiiiiiiiii"
                @admin.save 
                 @adm = Admin.where(status: "available", role: "proof_reader")
-                puts "trrsssssssss"
                 @add = @adm.ids
                 if @adm.length != 0
                     for i in 0..@adm.length - 1
                       if @add[i] == current_admin.id
                          next
-                      elsif Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i], :invite_status => "pending")
-                        next
-                      elsif Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i], :invite_status => "reject")
-                        next
-                      elsif Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i], :invite_status => "corrected")
+                      elsif Invite.exists?(:post_id => @invite.post_id, :reciever_id => @add[i])
                         next
                       else
                         @invit = Invite.new
