@@ -116,7 +116,7 @@ class UserWalletController < ApplicationController
                 else
                    @offer = @total - @cupon.amount
                    @post.coupon_benifit = @offer
-                   @post.cupon_id = @cupon.first
+                   @post.cupon_id = @cupon.id
                    @total = @total - @offer
                    @percentage = (@total * @costs.admin_commission) / 100
                    @pf = @total - @percentage
@@ -176,7 +176,7 @@ class UserWalletController < ApplicationController
                    @cu.user_id = current_user.id
                    @cu.cupon_id = @cupon.id
                    @post.coupon_benifit = @offer
-                   @post.cupon_id = @cupon.first
+                   @post.cupon_id = @cupon.id
                    @percentage = 0
                    @pf = 0
                    @extra = @user_wallet.lock_balance
@@ -188,7 +188,7 @@ class UserWalletController < ApplicationController
                    @cu.user_id = current_user.id
                    @cu.cupon_id = @cupon.id
                    @post.coupon_benifit = @offer
-                   @post.cupon_id = @cupon.first
+                   @post.cupon_id = @cupon.id
                    @total = @total - @offer
                    @percentage = (@total * @costs.admin_commission) / 100
                    @pf = @total - @percentage
