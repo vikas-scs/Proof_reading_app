@@ -15,15 +15,15 @@ class PostController < ApplicationController
       @post = Post.find(params[:id])
       if @post.cupon_id.present?
        @cupon = Cupon.find(@post.cupon_id)
-     end    
-    @statement1 = Statement.where(post_id: @post.id, action: "distributing money for proofread").first
-    @statement2 = Statement.where(post_id: @post.id, action: "distributing money for proofread").second
-    @invite = Invite.where(post_id: @post.id).first
-    @admin = Admin.find(@invite.reciever_id)
-  end
-  if @post.cupon_id.present?
-   @cupon = Cupon.find(@post.cupon_id)
-  end
+      end    
+      @statement1 = Statement.where(post_id: @post.id, action: "distributing money for proofread").first
+      @statement2 = Statement.where(post_id: @post.id, action: "distributing money for proofread").second
+      @invite = Invite.where(post_id: @post.id).first
+      @admin = Admin.find(@invite.reciever_id)
+   end
+   if @post.cupon_id.present?
+    @cupon = Cupon.find(@post.cupon_id)
+   end
     if Invite.exists?(post_id: params[:id], invite_status: "accept")                        #checking whether post is exist in invitations
          @invite = Invite.where(post_id: params[:id], invite_status: "accept").first                             #getting invitation id from post status    
       end
@@ -47,7 +47,8 @@ class PostController < ApplicationController
       redirect_to new_post_path
       return
     end
-    @user_wallet = UserWallet.find(current_user.id)                      #getting the userwallet in at instance
+    @user = User.find(current_user.id)
+    @user_wallet = @user.user_wallet                      #getting the userwallet in at instance
     @cost = Cost.find(1)
     @post = Post.new(post_params)
     @statement = Statement.new                                     #create a statement when the locking the amount for post

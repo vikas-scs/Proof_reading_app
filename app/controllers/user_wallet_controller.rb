@@ -7,7 +7,8 @@ class UserWalletController < ApplicationController
     @wallet = UserWallet.find(params[:id])
   end
   def edit
-       @wallet = UserWallet.find(params[:id])
+       @user = User.find(current_user.id)
+       @wallet = @user.user_wallet
   end
   def show
     @wallet = UserWallet.find(params[:id])
@@ -30,7 +31,8 @@ class UserWalletController < ApplicationController
   	a = current_user.user_wallet.balance
   	puts a
   	total = a + amount
-    @wallet = UserWallet.find(current_user.id)
+    @user = User.find(current_user.id)
+    @wallet = @user.user_wallet
     puts total
     @wallet.balance = total           
      UserWallet.transaction do                                    #locking the transaction for avoiding deadlocks
@@ -64,7 +66,7 @@ class UserWalletController < ApplicationController
       @statement.user_id = current_user.id
       @statement.post_id = @post.id
       @statement.ref_id = rand(7 ** 7)
-      @user_wallet = UserWallet.find(current_user.id)
+      @user_wallet = @user.user_wallet
       @invite = Invite.find(params[:invite_id])
       @admin = Admin.find(@invite.host_id)
       @statement.admin_id = @admin.id
