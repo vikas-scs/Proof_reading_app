@@ -8,7 +8,7 @@
          <% if post.id == invite.post_id %>
            <% if post.status == "pending" %>
               <b><p>request from:</p></b>
-              <b>post_id:<%= invite.post_id %></b><br>
+              <b>post id:<%= invite.post_id %></b><br>
               <%= form_tag(invitation_action_path, :method => "get") do %> 
                 <%= hidden_field_tag :"is_status", "accepted" %>
                 <%= hidden_field_tag :"invite_id", invite.id %>

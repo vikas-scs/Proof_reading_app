@@ -5,7 +5,7 @@
   <% @posts.each do |post| %>
    <% if post.id == invite.post_id %>
       <% if post.status == "processing" %>
-       <b>post_id:<%= invite.post_id %></b><br> 
+       <b>post id:<%= invite.post_id %></b><br> 
      <%= form_tag(accept_action_path, :method => "get") do %>
      <%= hidden_field_tag :"post_id", invite.post_id %>
      <%= hidden_field_tag :"invite_id", invite.id %>
