@@ -102,7 +102,8 @@ class UserWalletController < ApplicationController
                 @extra = @user_wallet.lock_balance - @total
                 @cupon.save
               elsif !@cupon.percentage.present?                   #if the percentage is not available in coupon table
-                if @cupon.amount > @total
+                if @cupon.amount >= @total
+                  puts "coming here"
                    @offer = @total
                    @total = 0
                    @cu = CuponsUsers.new
@@ -116,6 +117,7 @@ class UserWalletController < ApplicationController
                    @cupon.save
                    @cu.save
                 else
+                  puts "not here"
                    @offer = @total - @cupon.amount
                    @post.coupon_benifit = @offer
                    @post.cupon_id = @cupon.id
@@ -171,7 +173,7 @@ class UserWalletController < ApplicationController
                 @cupon.save
                 @cu.save
               elsif !@cupon.percentage.present?                           #if the percentage is not available in coupon table
-                if @cupon.amount > @total
+                if @cupon.amount >= @total
                    @offer = @total
                    @total = 0
                    @cu = CuponsUsers.new
